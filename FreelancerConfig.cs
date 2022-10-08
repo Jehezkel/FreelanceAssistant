@@ -6,4 +6,5 @@ public class FreelancerConfig
     public string clientSecret { get; set; }
     public string authEndpoint { get; set; }
     public string redirectUri { get; set; }
+    public string baseAddress { get; set; }
 }
