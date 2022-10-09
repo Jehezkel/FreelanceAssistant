@@ -1,8 +1,15 @@
+using webapi.Models;
 using WebApi;
+using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<FreelancerClient>();
-builder.Services.AddHostedService<RefreshManager>();
+var services = builder.Services;
+var config = builder.Configuration;
+services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
+services.AddSingleton<FreelancerClient>();
+services.AddHostedService<RefreshManager>();
+services.Configure<MailSettings>(config.GetSection("MailSettings"));
+services.AddTransient<MailService>();
 var app = builder.Build();
 
 app.MapGet("/Authorize", (FreelancerClient client) =>

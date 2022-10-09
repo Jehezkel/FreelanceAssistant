@@ -1,4 +1,4 @@
-namespace webapi.Models;
+namespace WebApi.Models;
 public class ProjectsResponse
 {
     public string status { get; set; }

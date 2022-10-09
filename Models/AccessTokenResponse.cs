@@ -1,4 +1,4 @@
-namespace webapi.Models;
+namespace WebApi.Models;
 public class AccessTokenResponse
 {
     public string? scope { get; set; }

@@ -1,14 +1,18 @@
+using WebApi.Services;
+
 namespace WebApi;
 public class RefreshManager : IHostedService, IDisposable
 {
     private readonly ILogger<RefreshManager> _logger;
     private readonly FreelancerClient _client;
+    private readonly MailService _mailService;
     private Timer? _timer = null;
 
-    public RefreshManager(ILogger<RefreshManager> logger, FreelancerClient client)
+    public RefreshManager(ILogger<RefreshManager> logger, FreelancerClient client, MailService mailService)
     {
         this._logger = logger;
         this._client = client;
+        _mailService = mailService;
     }
     public void Dispose()
     {
@@ -24,13 +28,14 @@ public class RefreshManager : IHostedService, IDisposable
 
     }
 
-    private void DoWork(object? state)
+    private async void DoWork(object? state)
     {
         _logger.LogInformation("Triggered");
         if (_client.IsAuthorized)
         {
             _logger.LogInformation("Work, work");
-            _client.fetchProjects();
+            await _client.fetchProjects();
+            await _mailService.SendEmailAsync();
 
         }
         else

@@ -3,31 +3,32 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
-using webapi.Models;
+using Microsoft.Extensions.Options;
+using WebApi.Models;
 
 namespace WebApi;
 
 public class FreelancerClient
 {
-    private FreelancerConfig _freelancerConfig = new FreelancerConfig();
+    private FreelancerConfig _freelancerConfig;
     private readonly ILogger<FreelancerClient> _logger;
     private readonly HttpClient _httpClient;
     private AccessTokenResponse TokenResponse = new AccessTokenResponse();
-    public bool IsAuthorized
-    {
-        get { return !String.IsNullOrEmpty(this.TokenResponse.access_token); }
-        private set { }
-    }
 
-    public FreelancerClient(IConfiguration config, ILogger<FreelancerClient> logger)
+    public FreelancerClient(IOptions<FreelancerConfig> options, ILogger<FreelancerClient> logger)
     {
-        config.GetSection("Freelancer").Bind(_freelancerConfig);
+        _freelancerConfig = options.Value;
         _logger = logger;
         _httpClient = new HttpClient
         {
             BaseAddress = new Uri(_freelancerConfig.baseAddress)
         };
 
+    }
+    public bool IsAuthorized
+    {
+        get { return !String.IsNullOrEmpty(this.TokenResponse.access_token); }
+        private set { }
     }
     public string getAuthorizationUrl()
     {
