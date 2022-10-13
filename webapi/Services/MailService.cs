@@ -2,7 +2,7 @@ using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using webapi.Models;
+using WebApi.Models;
 
 namespace WebApi.Services;
 

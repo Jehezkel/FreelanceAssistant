@@ -21,7 +21,7 @@ public class FreelancerClient
         _logger = logger;
         _httpClient = new HttpClient
         {
-            BaseAddress = new Uri(_freelancerConfig.baseAddress)
+            BaseAddress = new Uri(_freelancerConfig.BaseAddress)
         };
 
     }
@@ -32,11 +32,11 @@ public class FreelancerClient
     }
     public string getAuthorizationUrl()
     {
-        string authUri = new Uri(new Uri(_freelancerConfig.authEndpoint), new Uri("authorize", UriKind.Relative)).ToString();
+        string authUri = new Uri(new Uri(_freelancerConfig.AuthEndpoint), new Uri("authorize", UriKind.Relative)).ToString();
         Dictionary<string, string?> QueryParams = new();
         QueryParams.Add("response_type", "code");
-        QueryParams.Add("client_id", _freelancerConfig.clientId);
-        QueryParams.Add("redirect_uri", _freelancerConfig.redirectUri);
+        QueryParams.Add("client_id", _freelancerConfig.ClientID);
+        QueryParams.Add("redirect_uri", _freelancerConfig.RedirectUri);
         QueryParams.Add("scope", "basic");
         QueryParams.Add("advanced_scopes", "2");
         var authUrl = QueryHelpers.AddQueryString(authUri, QueryParams);
@@ -45,14 +45,14 @@ public class FreelancerClient
     }
     public async void verifyCode(string code)
     {
-        var tokenUri = new Uri(new Uri(_freelancerConfig.authEndpoint), new Uri("token", UriKind.Relative));
+        var tokenUri = new Uri(new Uri(_freelancerConfig.AuthEndpoint), new Uri("token", UriKind.Relative));
 
         var verifyCodeParams = new Dictionary<string, string>();
         verifyCodeParams.Add("grant_type", "authorization_code");
         verifyCodeParams.Add("code", code);
-        verifyCodeParams.Add("client_id", _freelancerConfig.clientId);
-        verifyCodeParams.Add("client_secret", _freelancerConfig.clientSecret);
-        verifyCodeParams.Add("redirect_uri", _freelancerConfig.redirectUri);
+        verifyCodeParams.Add("client_id", _freelancerConfig.ClientID);
+        verifyCodeParams.Add("client_secret", _freelancerConfig.ClientSecret);
+        verifyCodeParams.Add("redirect_uri", _freelancerConfig.RedirectUri);
         HttpClient authClient = new HttpClient();
 
         HttpRequestMessage req = new HttpRequestMessage();
@@ -77,7 +77,7 @@ public class FreelancerClient
     }
     public async Task<IEnumerable<Project>> fetchProjects()
     {
-        var activeUri = new Uri(new Uri(_freelancerConfig.baseAddress), new Uri("projects/0.1/projects/active", UriKind.Relative));
+        var activeUri = new Uri(new Uri(_freelancerConfig.BaseAddress), new Uri("projects/0.1/projects/active", UriKind.Relative));
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", TokenResponse.access_token);
         var responseContent = await _httpClient.GetFromJsonAsync<ProjectsResponse>(activeUri);
         if (responseContent.status == "success")
