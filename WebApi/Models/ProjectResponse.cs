@@ -1,12 +1,8 @@
 namespace WebApi.Models;
 public class ProjectsResponse
 {
-    public string status { get; set; }
+    public string status { get; set; } = null!;
     public ProjectsResult? result { get; set; }
-    public ProjectsResponse(string status)
-    {
-        this.status = status;
-    }
 }
 public class ProjectsResult
 {

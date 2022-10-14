@@ -18,7 +18,7 @@ services.Configure<IdentityOptions>(opt =>
 {
     opt.User.RequireUniqueEmail = true;
 });
-services.AddDefaultIdentity<AppUser>().AddEntityFrameworkStores<FLDbContext>();
+services.AddDefaultIdentity<AppUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<FLDbContext>();
 services.AddAuthentication(opt =>
 {
     opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -75,6 +75,7 @@ builder.Services.AddSwaggerGen(options =>
 services.AddControllers();
 
 var app = builder.Build();
+app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

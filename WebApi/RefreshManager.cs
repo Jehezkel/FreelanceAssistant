@@ -35,7 +35,7 @@ public class RefreshManager : IHostedService, IDisposable
         {
             _logger.LogInformation("Work, work");
             await _client.fetchProjects();
-            await _mailService.SendEmailAsync();
+            // await _mailService.SendEmailAsync();
 
         }
         else

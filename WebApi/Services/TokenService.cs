@@ -14,7 +14,7 @@ public class TokenService
     {
         _config = config;
     }
-    public string GenerateAccessToken(AppUser user, List<string> roles)
+    public string GenerateAccessToken(AppUser user, IEnumerable<string> roles)
     {
         var jwtSection = _config.GetSection("Authentication:Jwt");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]));
@@ -23,7 +23,7 @@ public class TokenService
         claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
         claims.Add(new Claim("name", user.UserName));
         claims.Add(new Claim("mail", user.Email));
-        roles.ForEach(r => claims.Add(new Claim("role", r)));
+        roles.ToList().ForEach(r => claims.Add(new Claim("role", r)));
         var jwt = new JwtSecurityToken(
             issuer: jwtSection["ValidIssuer"],
             audience: jwtSection["ValidAudience"],

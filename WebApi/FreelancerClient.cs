@@ -62,7 +62,7 @@ public class FreelancerClient
 
         var response = await authClient.SendAsync(req);
         _logger.LogDebug("Test convert request {0}", JsonSerializer.Serialize(req));
-        _logger.LogDebug("Destination URL: {0}", response.RequestMessage.RequestUri);
+        _logger.LogDebug("Destination URL: {0}", response!.RequestMessage!.RequestUri);
         _logger.LogDebug("Request headers: {0}", JsonSerializer.Serialize(response.RequestMessage.Headers));
 
         _logger.LogDebug("Status code: {0}", response.StatusCode);
@@ -70,7 +70,7 @@ public class FreelancerClient
         response.EnsureSuccessStatusCode();
         if (response.Content is not null)
         {
-            this.TokenResponse = await response.Content.ReadFromJsonAsync<AccessTokenResponse>();
+            this.TokenResponse = await response!.Content.ReadFromJsonAsync<AccessTokenResponse>() ?? new AccessTokenResponse();
             _logger.LogDebug("Success: {0}", this.TokenResponse.access_token);
         }
         // return response.Result.Content;
@@ -79,10 +79,10 @@ public class FreelancerClient
     {
         var activeUri = new Uri(new Uri(_freelancerConfig.BaseAddress), new Uri("projects/0.1/projects/active", UriKind.Relative));
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", TokenResponse.access_token);
-        var responseContent = await _httpClient.GetFromJsonAsync<ProjectsResponse>(activeUri);
+        var responseContent = await _httpClient.GetFromJsonAsync<ProjectsResponse>(activeUri) ?? new ProjectsResponse();
         if (responseContent.status == "success")
         {
-            return responseContent.result.projects;
+            return responseContent.result!.projects;
         }
         return Enumerable.Empty<Project>();
     }
