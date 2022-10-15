@@ -105,22 +105,41 @@ public class AccountController : ControllerBase
 
         return Ok(refreshResult);
     }
+    [HttpGet]
+    [Route("ActivateAccount/{tokenValue}")]
+    public async Task<IActionResult> ActivateAccount([FromRoute] string tokenValue)
+    {
+        var userToken = await _context.UserTokens.Include(t => t.User).Where(t => t.TokenValue == tokenValue && t.Type == TokenType.Activation).FirstOrDefaultAsync();
+        if (userToken is null)
+        {
+            return NotFound("Activation code not found.");
+        }
+        userToken.User.EmailConfirmed = true;
+        _context.UserTokens.Remove(userToken);
+        await _context.SaveChangesAsync();
+        return Ok();
+    }
     private async Task<UserToken> GenerateTempToken(AppUser user, TokenType tokenType)
     {
         var token = await _context.UserTokens.Where(t => t.User == user && t.Type == tokenType).FirstOrDefaultAsync();
+        var tokenVal = tokenType == TokenType.Refresh ? _tokenService.GenerateRefreshToken() : Guid.NewGuid().ToString();
         if (token is null)
         {
             _logger.LogDebug("New token");
             token = new UserToken
             {
                 User = user,
-                TokenValue = _tokenService.GenerateRefreshToken(),
+                TokenValue = tokenVal,
                 Type = tokenType
             };
             _context.UserTokens.Add(token);
         }
         if (token is not null)
-            token.TokenValue = _tokenService.GenerateRefreshToken();
+        {
+            _logger.LogDebug("Updating token value");
+            token.TokenValue = tokenVal;
+        }
+        token.CreateDate = DateTimeOffset.UtcNow;
         await _context.SaveChangesAsync();
         return token!;
     }
