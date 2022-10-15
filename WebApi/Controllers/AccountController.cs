@@ -119,6 +119,22 @@ public class AccountController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok();
     }
+    [HttpPost]
+    [Route("ResetPasswordRequest")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ResetPasswordRequest([FromBody] ResetPasswordRequest request)
+    {
+        
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user is null)
+        {
+            _logger.LogError("No user found with mail {0}", request.Email);
+            return NotFound("No user registered with specified email.");
+        }
+        // _mailService.SendActivationMail
+        return Ok();
+    }
     private async Task<UserToken> GenerateTempToken(AppUser user, TokenType tokenType)
     {
         var token = await _context.UserTokens.Where(t => t.User == user && t.Type == tokenType).FirstOrDefaultAsync();
@@ -139,7 +155,7 @@ public class AccountController : ControllerBase
             _logger.LogDebug("Updating token value");
             token.TokenValue = tokenVal;
         }
-        token.CreateDate = DateTimeOffset.UtcNow;
+        token!.CreateDate = DateTimeOffset.UtcNow;
         await _context.SaveChangesAsync();
         return token!;
     }

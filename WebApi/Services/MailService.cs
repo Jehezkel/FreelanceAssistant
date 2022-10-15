@@ -10,11 +10,13 @@ public class MailService
 {
     private readonly MailSettings _settings;
     private readonly ILogger<MailService> _logger;
+    private readonly MailTemplateService _templateService;
     private readonly SmtpClient _client;
 
-    public MailService(IOptions<MailSettings> options, ILogger<MailService> logger)
+    public MailService(IOptions<MailSettings> options, ILogger<MailService> logger, MailTemplateService templateService)
     {
         _logger = logger;
+        _templateService = templateService;
         _settings = options.Value;
         _client = new SmtpClient();
 
@@ -26,17 +28,47 @@ public class MailService
         var msg = new MimeMessage();
         msg.From.Add(new MailboxAddress("Freelance Assistant", _settings.Mail));
         msg.To.Add(new MailboxAddress(user.UserName, user.Email));
-        msg.Subject = $"Freelance Notification | {subject}";
+        msg.Subject = $"FL Assistant | {subject}";
         msg.Body = (new BodyBuilder
         {
-            TextBody = body
+            HtmlBody = body
         }).ToMessageBody();
+        // msg.Body = new TextPart()
         await _client.SendAsync(msg);
         await _client.DisconnectAsync(true);
     }
     public async Task SendActivationMail(AppUser user, string code)
     {
+        string htmlContent = $@"             <td>
+                        <p>Hello {user.UserName}!</p>
+                        <p>Welcome to our site. To activate account please use below link.</p>
+                        <table role='presentation' border='0' cellpadding='0' cellspacing='0' class='btn btn-primary'>
+                          <tbody>
+                            <tr>
+                              <td align='center'>
+                                <table role='presentation' border='0' cellpadding='0' cellspacing='0'>
+                                  <tbody>
+                                    <tr>
+                                      <td> <a href='https://localhost:7195/Account/ActivateAccount/{code}' target='_blank'>Activate</a> </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <p> If you did not intend to create account on Freelancer assistant, please ignore that mail.</p>
+                        <p> Regards,</p>
+                        <p> FL Assistant Admin</p>
+                      </td>";
+        // _logger.LogInformation("No cos jest: {0}", _templateService.Test());
+        string htmlBody = _templateService.PrepareMailBody(htmlContent);
+        // string body = $"Hello {user.UserName}! \n Your activation code is {code}";
+        await SendEmailAsync(user, "Account Activation", htmlBody);
+    }
+    public async Task SendResetConfirmation(AppUser user, string code)
+    {
         string body = $"Hello {user.UserName}! \n Your activation code is {code}";
-        await SendEmailAsync(user, "Account Activation", body);
+        await SendEmailAsync(user, "Password Reset Request", body);
     }
 }

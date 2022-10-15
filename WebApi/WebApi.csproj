@@ -17,6 +17,9 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <None Update="MailTemplates/*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-
+  
 </Project>
