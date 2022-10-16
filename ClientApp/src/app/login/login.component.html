@@ -1,3 +1,39 @@
-<p>login works!</p>
-<p>Source is {{ sourceUrl }}</p>
-<button (click)="submitLogin()">Login</button>
+<div
+  class="h-screen bg-[url('assets/images/LoginBackground.jpg')] bg-cover justify-center items-center flex"
+>
+  <div
+    class="bg-slate-400/75 border border-slate-500 px-10 pt-7 pb-2 rounded shadow-xl w-96"
+  >
+    <!-- <p class="font-bold">login works!</p> -->
+    <div>
+      <input
+        type="text"
+        class="bg-white/75 rounded px-2 py-1 outline-none border focus:border-green-500 w-full"
+        placeholder="Email"
+      />
+    </div>
+    <div class="mt-3">
+      <input
+        type="password"
+        class="bg-white/75 rounded px-2 py-1 outline-none border focus:border-green-500 w-full"
+        placeholder="Password"
+      />
+    </div>
+    <div class="flex pr-2 mt-2 text-cyan-200 font-extralight">
+      <p class="text-sm cursor-default hover:underline">Recover password</p>
+      <p
+        class="ml-auto text-sm cursor-default hover:underline"
+        routerLink="/register"
+      >
+        Register
+      </p>
+    </div>
+    <div class="flex">
+      <button
+        class="rounded transition-all outline-none hover:transition-all mt-2 bg-green-600 bg-opacity-30 px-6 py-1 mx-auto text-white font-semibold border border-green-500 hover:bg-opacity-80 focus:hover:bg-opacity-100"
+      >
+        Login
+      </button>
+    </div>
+  </div>
+</div>

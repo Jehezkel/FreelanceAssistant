@@ -33,7 +33,6 @@ public class MailService
         {
             HtmlBody = body
         }).ToMessageBody();
-        // msg.Body = new TextPart()
         await _client.SendAsync(msg);
         await _client.DisconnectAsync(true);
     }
@@ -61,9 +60,7 @@ public class MailService
                         <p> Regards,</p>
                         <p> FL Assistant Admin</p>
                       </td>";
-        // _logger.LogInformation("No cos jest: {0}", _templateService.Test());
         string htmlBody = _templateService.PrepareMailBody(htmlContent);
-        // string body = $"Hello {user.UserName}! \n Your activation code is {code}";
         await SendEmailAsync(user, "Account Activation", htmlBody);
     }
     public async Task SendResetConfirmation(AppUser user, string code)
