@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   ActivatedRoute,
   ActivatedRouteSnapshot,
   Route,
   Router,
 } from '@angular/router';
+import { finalize } from 'rxjs';
 import { UserService } from '../_services/user.service';
 
 @Component({
@@ -14,11 +16,18 @@ import { UserService } from '../_services/user.service';
 })
 export class LoginComponent implements OnInit {
   sourceUrl: string = '';
+  loginForm: FormGroup;
+  isLoading: boolean = false;
   constructor(
     route: ActivatedRoute,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    fb: FormBuilder
   ) {
+    this.loginForm = fb.group({
+      email: ['', [Validators.email, Validators.required]],
+      pass: ['', Validators.required],
+    });
     route.queryParamMap.subscribe(
       (p) => (this.sourceUrl = p.get('redirect') ?? '')
     );
@@ -30,7 +39,15 @@ export class LoginComponent implements OnInit {
     }
   }
   submitLogin() {
-    this.userService.login();
-    this.router.navigateByUrl(this.sourceUrl);
+    this.isLoading = true;
+    this.userService
+      .login(
+        this.loginForm.controls.email.value,
+        this.loginForm.controls.pass.value
+      )
+      .pipe(finalize(() => (this.isLoading = false)))
+      .subscribe({
+        next: () => this.router.navigateByUrl(this.sourceUrl),
+      });
   }
 }

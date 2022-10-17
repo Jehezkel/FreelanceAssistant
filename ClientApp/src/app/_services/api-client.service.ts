@@ -8,7 +8,7 @@ export class ApiClientService {
   API_BASE_URL: string = 'https://localhost:7195/';
   constructor(private httpClient: HttpClient) {}
   login(email: string, password: string) {
-    const uri = this.API_BASE_URL + '/Account/Login';
+    const uri = this.API_BASE_URL + 'Account/Login';
     const reqBody = {
       email: email,
       password: password,

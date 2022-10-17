@@ -72,16 +72,24 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-
+string localHostPolicy = "localhost";
+var allowedOrigins = config.GetSection("CORS:AllowedOrigins").Get<string[]>();
 services.AddControllers();
+services.AddCors(o => o.AddPolicy(name: localHostPolicy, policy =>
+{
+    policy.WithOrigins(allowedOrigins);
+    policy.AllowAnyHeader();
+}));
 
 var app = builder.Build();
 app.MapControllers();
+app.UseCors(localHostPolicy);
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 
 
 

@@ -1,0 +1,14 @@
+<div class="absolute left-0 top-0">
+  <!-- MESSAGE_CARD -->
+  <div
+    *ngFor="let message of msgService.Messages$ | async"
+    class="bg-black/80 w-48 h-20 rounded-sm text-slate-100/80 border-l-4 mt-2 ml-1"
+    [ngClass]="{
+      'border-l-lime-400': msgIsLevelOf(message, 'Success'),
+      'border-l-red-600': msgIsLevelOf(message, 'Error'),
+      'border-l-sky-600': msgIsLevelOf(message, 'Info')
+    }"
+  >
+    <p>{{ message.text }}</p>
+  </div>
+</div>
