@@ -1,14 +1,33 @@
-<div class="absolute left-0 top-0">
+<div class="absolute left-0 top-0 max-h-screen h-screen">
   <!-- MESSAGE_CARD -->
   <div
     *ngFor="let message of msgService.Messages$ | async"
-    class="bg-black/80 w-48 h-20 rounded-sm text-slate-100/80 border-l-4 mt-2 ml-1"
+    class="message min-w-fit pr-1 bg-black/80 w-60 h-20 rounded-sm text-slate-100/80 border-l-4 mt-2 ml-1 -left-48 cursor-default relative flex items-center"
     [ngClass]="{
       'border-l-lime-400': msgIsLevelOf(message, 'Success'),
       'border-l-red-600': msgIsLevelOf(message, 'Error'),
       'border-l-sky-600': msgIsLevelOf(message, 'Info')
     }"
   >
-    <p>{{ message.text }}</p>
+    <!-- ICON -->
+    <span
+      class="material-symbols-outlined self-center text-2xl ml-2"
+      [ngClass]="{
+        'text-lime-400': msgIsLevelOf(message, 'Success'),
+        'text-red-600': msgIsLevelOf(message, 'Error'),
+        'text-sky-600': msgIsLevelOf(message, 'Info')
+      }"
+    >
+      {{ getIcon(message) }}
+    </span>
+    <div class="ml-2 flex flex-col w-full h-full">
+      <span
+        class="material-symbols-outlined ml-auto self-end mr-1 text-lg cursor-pointer absolute"
+        (click)="msgService.dismissMessage(message)"
+      >
+        close
+      </span>
+      <p class="text-xs my-auto">{{ message.text }}</p>
+    </div>
   </div>
 </div>

@@ -1,0 +1,13 @@
+.message
+{
+  /* color:black; */
+  /* left:-600px; */
+  /* position: absolute; */
+  -webkit-animation: slide-in 0.5s forwards;
+  animation: slide-in 0.5s forwards;
+  /* animation-delay: 2s; */
+}
+@keyframes slide-in {
+  80%{left:5px;}
+  100%{left:0px;}
+}

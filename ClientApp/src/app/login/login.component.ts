@@ -7,6 +7,7 @@ import {
   Router,
 } from '@angular/router';
 import { finalize } from 'rxjs';
+import { MessagesService } from '../_services/messages.service';
 import { UserService } from '../_services/user.service';
 
 @Component({
@@ -22,7 +23,8 @@ export class LoginComponent implements OnInit {
     route: ActivatedRoute,
     private userService: UserService,
     private router: Router,
-    fb: FormBuilder
+    fb: FormBuilder,
+    private msgService: MessagesService
   ) {
     this.loginForm = fb.group({
       email: ['', [Validators.email, Validators.required]],
@@ -47,7 +49,13 @@ export class LoginComponent implements OnInit {
       )
       .pipe(finalize(() => (this.isLoading = false)))
       .subscribe({
-        next: () => this.router.navigateByUrl(this.sourceUrl),
+        next: () => {
+          this.router.navigateByUrl(this.sourceUrl);
+          this.msgService.addSuccess(
+            'Welcome, ' + this.userService.User$.value.userName
+          );
+        },
+        error: (error) => this.msgService.addError(error.message, 10),
       });
   }
 }

@@ -32,4 +32,19 @@ export class MessagesComponent implements OnInit {
     }
     return message.level == enumLevel;
   }
+  getIcon(message: Message): string {
+    let icon = 'info';
+    switch (message.level) {
+      case MessageLevel.Error:
+        icon = 'error';
+        break;
+      case MessageLevel.Info:
+        icon = 'info';
+        break;
+      case MessageLevel.Success:
+        icon = 'check_circle';
+        break;
+    }
+    return icon;
+  }
 }

@@ -11,6 +11,7 @@ import { RegisterComponent } from './register/register.component';
 import { environment } from 'src/environments/environment';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MessagesComponent } from './messages/messages.component';
+import { MomentModule } from 'ngx-moment';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { MessagesComponent } from './messages/messages.component';
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule,
+    MomentModule,
   ],
   providers: [
     AuthGuard,
