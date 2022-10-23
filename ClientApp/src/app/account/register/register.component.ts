@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ApiClientService } from '../_services/api-client.service';
+import { ApiClientService } from '../../_services/api-client.service';
 
 @Component({
   selector: 'app-register',
@@ -10,6 +10,7 @@ import { ApiClientService } from '../_services/api-client.service';
 })
 export class RegisterComponent implements OnInit {
   RegisterForm: FormGroup;
+  ShowCompleteMsg: boolean = false;
   constructor(
     private apiClient: ApiClientService,
     fb: FormBuilder,
@@ -31,12 +32,15 @@ export class RegisterComponent implements OnInit {
         this.RegisterForm.controls.email.value,
         this.RegisterForm.controls.password.value
       )
-      .subscribe(
-        (result) => {
-          console.log(result);
-          this.router.navigateByUrl('/login');
+      .subscribe({
+        next: (result) => {
+          this.finalizeRegistration();
         },
-        (error) => console.log('error occured ', error)
-      );
+        error: (error) => console.log('error occured ', error),
+      });
+  }
+  finalizeRegistration() {
+    this.ShowCompleteMsg = true;
+    setTimeout(() => this.router.navigateByUrl('/login'), 5000);
   }
 }

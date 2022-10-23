@@ -7,8 +7,8 @@ import {
   Router,
 } from '@angular/router';
 import { finalize } from 'rxjs';
-import { MessagesService } from '../_services/messages.service';
-import { UserService } from '../_services/user.service';
+import { MessagesService } from '@services/messages.service';
+import { UserService } from '@services/user.service';
 
 @Component({
   selector: 'app-login',

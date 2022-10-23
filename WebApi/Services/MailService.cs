@@ -48,7 +48,7 @@ public class MailService
                                 <table role='presentation' border='0' cellpadding='0' cellspacing='0'>
                                   <tbody>
                                     <tr>
-                                      <td> <a href='https://localhost:7195/Account/ActivateAccount/{code}' target='_blank'>Activate</a> </td>
+                                      <td> <a href='{_settings.RedirectBase}/activate?tokenValue={code}' target='_blank'>Activate</a> </td>
                                     </tr>
                                   </tbody>
                                 </table>

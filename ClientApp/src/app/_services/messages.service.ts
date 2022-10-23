@@ -8,9 +8,9 @@ export class MessagesService {
   private idx = 0;
   Messages$: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
   constructor() {
-    this.addMessage(new Message(MessageLevel.Info, 'Test info', 100));
-    this.addMessage(new Message(MessageLevel.Error, 'Test error', 10));
-    this.addMessage(new Message(MessageLevel.Success, 'Test success', 10));
+    // this.addMessage(new Message(MessageLevel.Info, 'Test info', 100));
+    // this.addMessage(new Message(MessageLevel.Error, 'Test error', 10));
+    // this.addMessage(new Message(MessageLevel.Success, 'Test success', 10));
   }
   addMessage(msg: Message) {
     msg.id = this.idx++;

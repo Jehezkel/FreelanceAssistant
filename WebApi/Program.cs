@@ -7,8 +7,8 @@ using WebApi.Models;
 using WebApi.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -90,7 +90,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// app.UseAuthentication();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+app.UseAuthentication();
 
+app.UseAuthorization();
 
 
 

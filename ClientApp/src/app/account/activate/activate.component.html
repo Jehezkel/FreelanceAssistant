@@ -1,0 +1,36 @@
+<div
+  class="h-screen bg-[url('assets/images/LoginBackground.jpg')] bg-cover justify-center items-center flex"
+>
+  <div
+    class="bg-slate-400/75 border border-slate-500 px-10 pt-7 pb-2 rounded shadow-xl w-96"
+  >
+    <div class="flex justify-center items-center flex-col text-center pb-5">
+      <!-- <span class="material-symbols-outlined text-6xl text-sky-600">
+        mark_email_read
+      </span> -->
+      <div class="w-10 h-10">
+        <div class="simple-spinner">
+          <span class="border-4 border-transparent border-r-sky-500"></span>
+        </div>
+      </div>
+      <p class="mt-5 font-semibold text-white">
+        Activation in progress...
+        {{ code }}
+        <!-- {{ RegisterForm.controls.email.value || "sxedesign@gmail.com" }} -->
+      </p>
+    </div>
+    <!-- Success -->
+    <div
+      *ngIf="!isLoading"
+      class="flex justify-center items-center flex-col text-center pb-5"
+    >
+      <span class="material-symbols-outlined text-6xl text-sky-600">
+        mark_email_read
+      </span>
+      <p class="mt-5 font-semibold text-white">
+        Account activation successfull.
+        <!-- {{ RegisterForm.controls.email.value || "sxedesign@gmail.com" }} -->
+      </p>
+    </div>
+  </div>
+</div>

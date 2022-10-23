@@ -1,9 +1,13 @@
 <div
   class="h-screen bg-[url('assets/images/LoginBackground.jpg')] bg-cover justify-center items-center flex"
 >
-  <form [formGroup]="RegisterForm" (ngSubmit)="submitRegister()">
-    <div
-      class="bg-slate-400/75 border border-slate-500 px-10 pt-7 pb-2 rounded shadow-xl w-96"
+  <div
+    class="bg-slate-400/75 border border-slate-500 px-10 pt-7 pb-2 rounded shadow-xl w-96"
+  >
+    <form
+      [formGroup]="RegisterForm"
+      (ngSubmit)="submitRegister()"
+      *ngIf="!ShowCompleteMsg"
     >
       <div>
         <input
@@ -53,6 +57,11 @@
           Register
         </button>
       </div>
+    </form>
+    <div *ngIf="ShowCompleteMsg" class="flex justify-center items-center flex-col text-center  pb-5">
+      <span class="material-symbols-outlined text-6xl text-lime-400"> mail </span>
+
+      <p>Activation mail sent to {{ RegisterForm.controls.email.value || "sxedesign@gmail.com" }}</p>
     </div>
-  </form>
+  </div>
 </div>

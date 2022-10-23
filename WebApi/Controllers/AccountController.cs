@@ -106,8 +106,8 @@ public class AccountController : ControllerBase
         return Ok(refreshResult);
     }
     [HttpGet]
-    [Route("ActivateAccount/{tokenValue}")]
-    public async Task<IActionResult> ActivateAccount([FromRoute] string tokenValue)
+    [Route("ActivateAccount")]
+    public async Task<IActionResult> ActivateAccount([FromQuery] string tokenValue)
     {
         var userToken = await _context.UserTokens.Include(t => t.User).Where(t => t.TokenValue == tokenValue && t.Type == TokenType.Activation).FirstOrDefaultAsync();
         if (userToken is null)
@@ -125,7 +125,7 @@ public class AccountController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ResetPasswordRequest([FromBody] ResetPasswordRequest request)
     {
-        
+
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user is null)
         {
@@ -134,6 +134,13 @@ public class AccountController : ControllerBase
         }
         // _mailService.SendActivationMail
         return Ok();
+    }
+    [HttpGet]
+    [Authorize]
+    [Route("Test")]
+    public async Task<IActionResult> Test()
+    {
+        return Ok("udalo sie");
     }
     private async Task<UserToken> GenerateTempToken(AppUser user, TokenType tokenType)
     {

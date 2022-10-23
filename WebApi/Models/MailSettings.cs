@@ -4,6 +4,7 @@ public class MailSettings
 {
     public string Mail { get; set; } = "";
     public string Password { get; set; } = "";
+    public string RedirectBase { get; set; } = "";
     public SmtpSettings SMTP { get; set; } = new();
 }
 public class SmtpSettings

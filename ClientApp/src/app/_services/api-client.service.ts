@@ -1,11 +1,12 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiClientService {
-  API_BASE_URL: string = 'https://localhost:7195/';
+  API_BASE_URL: string = environment.API_BASE_PATH;
   constructor(private httpClient: HttpClient) {}
   login(email: string, password: string) {
     const uri = this.API_BASE_URL + 'Account/Login';
@@ -23,5 +24,10 @@ export class ApiClientService {
       userName: userName,
     };
     return this.httpClient.post(uri, reqBody);
+  }
+  activate(tokenValue: string) {
+    const uri = this.API_BASE_URL + 'Account/ActivateAccount';
+    const params = new HttpParams().set('tokenValue', tokenValue);
+    return this.httpClient.get(uri, { params: params });
   }
 }
