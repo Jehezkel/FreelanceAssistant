@@ -10,7 +10,8 @@ public class FLDbContext : IdentityDbContext<AppUser>
     {
 
     }
-    public DbSet<UserTempToken> UserTempTokens { get; set; } = null!;
+    public DbSet<UserTempToken> UserTempTokens => Set<UserTempToken>();
+    public DbSet<FLApiToken> FLApiTokens => Set<FLApiToken>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -23,5 +24,9 @@ public class FLDbContext : IdentityDbContext<AppUser>
 
         builder.Entity<UserTempToken>()
         .Property(t => t.Type).HasConversion(v => v.ToString(), v => (TokenType)Enum.Parse(typeof(TokenType), v));
+
+        builder.Entity<FLApiToken>()
+        .HasOne(t => t.User);
+        builder.Entity<FLApiToken>().HasKey(t => t.UserID);
     }
 }

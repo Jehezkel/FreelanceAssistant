@@ -13,7 +13,7 @@ public class FreelancerClient
     private FreelancerConfig _freelancerConfig;
     private readonly ILogger<FreelancerClient> _logger;
     private readonly HttpClient _httpClient;
-    private AccessTokenResponse TokenResponse = new AccessTokenResponse();
+    // private AccessTokenResponse TokenResponse = new AccessTokenResponse();
 
     public FreelancerClient(IOptions<FreelancerConfig> options, ILogger<FreelancerClient> logger)
     {
@@ -25,11 +25,11 @@ public class FreelancerClient
         };
 
     }
-    public bool IsAuthorized
-    {
-        get { return !String.IsNullOrEmpty(this.TokenResponse.access_token); }
-        private set { }
-    }
+    // public bool IsAuthorized
+    // {
+    //     get { return !String.IsNullOrEmpty(this.TokenResponse.access_token); }
+    //     private set { }
+    // }
     public string getAuthorizationUrl()
     {
         string authUri = new Uri(new Uri(_freelancerConfig.AuthEndpoint), new Uri("authorize", UriKind.Relative)).ToString();
@@ -43,7 +43,7 @@ public class FreelancerClient
         _logger.LogDebug("Url that will be used: {0}", authUrl);
         return authUrl;
     }
-    public async void verifyCode(string code)
+    public async Task<AccessTokenResponse> verifyCode(string code)
     {
         var tokenUri = new Uri(new Uri(_freelancerConfig.AuthEndpoint), new Uri("token", UriKind.Relative));
 
@@ -70,15 +70,17 @@ public class FreelancerClient
         response.EnsureSuccessStatusCode();
         if (response.Content is not null)
         {
-            this.TokenResponse = await response!.Content.ReadFromJsonAsync<AccessTokenResponse>() ?? new AccessTokenResponse();
-            _logger.LogDebug("Success: {0}", this.TokenResponse.access_token);
+            var result = await response!.Content.ReadFromJsonAsync<AccessTokenResponse>() ?? new AccessTokenResponse();
+            _logger.LogDebug("Success: {0}", result);
+            return result;
         }
+        throw new Exception(String.Format("Verification for code {0} failed", code));
         // return response.Result.Content;
     }
-    public async Task<IEnumerable<Project>> fetchProjects()
+    public async Task<IEnumerable<Project>> fetchProjects(string access_token)
     {
         var activeUri = new Uri(new Uri(_freelancerConfig.BaseAddress), new Uri("projects/0.1/projects/active", UriKind.Relative));
-        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", TokenResponse.access_token);
+        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
         var responseContent = await _httpClient.GetFromJsonAsync<ProjectsResponse>(activeUri) ?? new ProjectsResponse();
         if (responseContent.status == "success")
         {
