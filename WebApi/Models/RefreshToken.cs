@@ -1,5 +1,5 @@
 namespace WebApi.Models;
-public class UserToken
+public class UserTempToken
 {
 
     public string TokenValue { get; set; } = null!;

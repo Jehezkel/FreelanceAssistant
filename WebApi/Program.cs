@@ -40,6 +40,7 @@ services.AddAuthentication(opt =>
 services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
 services.AddSingleton<FreelancerClient>();
 services.AddSingleton<MailTemplateService>(s => new MailTemplateService());
+services.AddHttpContextAccessor();
 //Temp disable 
 // services.AddHostedService<RefreshManager>();
 

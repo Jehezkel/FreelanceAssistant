@@ -10,18 +10,18 @@ public class FLDbContext : IdentityDbContext<AppUser>
     {
 
     }
-    public DbSet<UserToken> UserTokens { get; set; } = null!;
+    public DbSet<UserTempToken> UserTempTokens { get; set; } = null!;
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.Entity<UserToken>()
+        builder.Entity<UserTempToken>()
         .HasOne(t => t.User)
-        .WithMany(u => u.UserTokens)
+        .WithMany(u => u.UserTempTokens)
         .HasForeignKey(t => t.UserID);
 
-        builder.Entity<UserToken>().HasKey(t => new { t.UserID, t.Type });
+        builder.Entity<UserTempToken>().HasKey(t => new { t.UserID, t.Type });
 
-        builder.Entity<UserToken>()
+        builder.Entity<UserTempToken>()
         .Property(t => t.Type).HasConversion(v => v.ToString(), v => (TokenType)Enum.Parse(typeof(TokenType), v));
     }
 }

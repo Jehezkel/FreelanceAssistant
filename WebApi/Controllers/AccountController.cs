@@ -88,7 +88,7 @@ public class AccountController : ControllerBase
     [Route("RefreshToken")]
     public async Task<IActionResult> RefreshToken(string refreshToken)
     {
-        var token = await _context.UserTokens.Include(t => t.User).Where(t => t.TokenValue == refreshToken && t.Type == TokenType.Refresh).FirstOrDefaultAsync();
+        var token = await _context.UserTempTokens.Include(t => t.User).Where(t => t.TokenValue == refreshToken && t.Type == TokenType.Refresh).FirstOrDefaultAsync();
         if (token is null)
         {
             _logger.LogError($"Refresh token with value {refreshToken} not found!");
@@ -109,13 +109,13 @@ public class AccountController : ControllerBase
     [Route("ActivateAccount")]
     public async Task<IActionResult> ActivateAccount([FromQuery] string tokenValue)
     {
-        var userToken = await _context.UserTokens.Include(t => t.User).Where(t => t.TokenValue == tokenValue && t.Type == TokenType.Activation).FirstOrDefaultAsync();
+        var userToken = await _context.UserTempTokens.Include(t => t.User).Where(t => t.TokenValue == tokenValue && t.Type == TokenType.Activation).FirstOrDefaultAsync();
         if (userToken is null)
         {
             return NotFound("Activation code not found.");
         }
         userToken.User.EmailConfirmed = true;
-        _context.UserTokens.Remove(userToken);
+        _context.UserTempTokens.Remove(userToken);
         await _context.SaveChangesAsync();
         return Ok();
     }
@@ -135,27 +135,21 @@ public class AccountController : ControllerBase
         // _mailService.SendActivationMail
         return Ok();
     }
-    [HttpGet]
-    [Authorize]
-    [Route("Test")]
-    public async Task<IActionResult> Test()
+
+    private async Task<UserTempToken> GenerateTempToken(AppUser user, TokenType tokenType)
     {
-        return Ok("udalo sie");
-    }
-    private async Task<UserToken> GenerateTempToken(AppUser user, TokenType tokenType)
-    {
-        var token = await _context.UserTokens.Where(t => t.User == user && t.Type == tokenType).FirstOrDefaultAsync();
+        var token = await _context.UserTempTokens.Where(t => t.User == user && t.Type == tokenType).FirstOrDefaultAsync();
         var tokenVal = tokenType == TokenType.Refresh ? _tokenService.GenerateRefreshToken() : Guid.NewGuid().ToString();
         if (token is null)
         {
             _logger.LogDebug("New token");
-            token = new UserToken
+            token = new UserTempToken
             {
                 User = user,
                 TokenValue = tokenVal,
                 Type = tokenType
             };
-            _context.UserTokens.Add(token);
+            _context.UserTempTokens.Add(token);
         }
         if (token is not null)
         {

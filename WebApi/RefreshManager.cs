@@ -30,18 +30,18 @@ public class RefreshManager : IHostedService, IDisposable
 
     private async void DoWork(object? state)
     {
-        _logger.LogInformation("Triggered");
-        if (_client.IsAuthorized)
-        {
-            _logger.LogInformation("Work, work");
-            await _client.fetchProjects();
-            // await _mailService.SendEmailAsync();
+        // _logger.LogInformation("Triggered");
+        // if (_client.IsAuthorized)
+        // {
+        //     _logger.LogInformation("Work, work");
+        //     await _client.fetchProjects();
+        //     // await _mailService.SendEmailAsync();
 
-        }
-        else
-        {
-            _logger.LogWarning("Not authorized - no work");
-        }
+        // }
+        // else
+        // {
+        //     _logger.LogWarning("Not authorized - no work");
+        // }
     }
 
 
