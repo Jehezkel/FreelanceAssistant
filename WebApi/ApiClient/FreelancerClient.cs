@@ -4,11 +4,12 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using WebApi.ApiClient.Responses;
 using WebApi.Models;
 
-namespace WebApi;
+namespace WebApi.ApiClient;
 
-public class FreelancerClient
+public class FreelancerClient : IFreelancerClient
 {
     private FreelancerConfig _freelancerConfig;
     private readonly ILogger<FreelancerClient> _logger;
@@ -30,6 +31,8 @@ public class FreelancerClient
     //     get { return !String.IsNullOrEmpty(this.TokenResponse.access_token); }
     //     private set { }
     // }
+
+    // Provides url to obtain auth code from frontend
     public string getAuthorizationUrl()
     {
         string authUri = new Uri(new Uri(_freelancerConfig.AuthEndpoint), new Uri("authorize", UriKind.Relative)).ToString();
@@ -43,7 +46,8 @@ public class FreelancerClient
         _logger.LogDebug("Url that will be used: {0}", authUrl);
         return authUrl;
     }
-    public async Task<AccessTokenResponse> verifyCode(string code)
+    //Verify code obtained by user from frontend and get AccessToken
+    public async Task<AccessTokenResponse> VerifyCode(string code)
     {
         var tokenUri = new Uri(new Uri(_freelancerConfig.AuthEndpoint), new Uri("token", UriKind.Relative));
 
@@ -77,7 +81,7 @@ public class FreelancerClient
         throw new Exception(String.Format("Verification for code {0} failed", code));
         // return response.Result.Content;
     }
-    public async Task<IEnumerable<Project>> fetchProjects(string access_token)
+    public async Task<IEnumerable<Project>> FetchProjects(string access_token)
     {
         var activeUri = new Uri(new Uri(_freelancerConfig.BaseAddress), new Uri("projects/0.1/projects/active", UriKind.Relative));
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);

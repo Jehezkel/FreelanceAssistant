@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
+using WebApi.ApiClient;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -38,7 +39,7 @@ services.AddAuthentication(opt =>
 });
 
 services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
-services.AddSingleton<FreelancerClient>();
+services.AddSingleton<IFreelancerClient, FreelancerClient>();
 services.AddSingleton<MailTemplateService>(s => new MailTemplateService());
 services.AddHttpContextAccessor();
 //Temp disable 

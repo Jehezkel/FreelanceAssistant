@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.DAL;
 using WebApi.Models;
+using WebApi.ApiClient;
 
 namespace WebApi.Controllers;
 [ApiController]
@@ -15,9 +16,9 @@ public class FreelanceController : ControllerBase
     private readonly IHttpContextAccessor _contextAccessor;
     private readonly FLDbContext _dbContext;
     private readonly UserManager<AppUser> _userManager;
-    private readonly FreelancerClient _flClient;
+    private readonly IFreelancerClient _flClient;
 
-    public FreelanceController(ILogger<FreelanceController> logger, IHttpContextAccessor contextAccessor, FLDbContext dbContext, UserManager<AppUser> userManager, FreelancerClient flClient)
+    public FreelanceController(ILogger<FreelanceController> logger, IHttpContextAccessor contextAccessor, FLDbContext dbContext, UserManager<AppUser> userManager, IFreelancerClient flClient)
     {
         _logger = logger;
         _contextAccessor = contextAccessor;
@@ -42,14 +43,14 @@ public class FreelanceController : ControllerBase
     [Route("VerifyCode")]
     public async Task<IActionResult> VerifyCode(string code)
     {
-        var verResult = await _flClient.verifyCode(code);
-        if (verResult.access_token is not null)
+        var verResult = await _flClient.VerifyCode(code);
+        if (verResult.AccessToken is not null)
         {
             var user = await _userManager.GetUserAsync(_contextAccessor.HttpContext!.User);
             var flApiToken = new FLApiToken
             {
-                AccessToken = verResult.access_token,
-                RefreshToken = verResult.refresh_token!,
+                AccessToken = verResult.AccessToken,
+                RefreshToken = verResult.RefreshToken!,
                 User = user,
                 UserID = user.Id,
             };

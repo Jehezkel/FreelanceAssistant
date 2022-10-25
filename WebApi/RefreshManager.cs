@@ -1,14 +1,15 @@
+using WebApi.ApiClient;
 using WebApi.Services;
 
 namespace WebApi;
 public class RefreshManager : IHostedService, IDisposable
 {
     private readonly ILogger<RefreshManager> _logger;
-    private readonly FreelancerClient _client;
+    private readonly IFreelancerClient _client;
     private readonly MailService _mailService;
     private Timer? _timer = null;
 
-    public RefreshManager(ILogger<RefreshManager> logger, FreelancerClient client, MailService mailService)
+    public RefreshManager(ILogger<RefreshManager> logger, IFreelancerClient client, MailService mailService)
     {
         this._logger = logger;
         this._client = client;
