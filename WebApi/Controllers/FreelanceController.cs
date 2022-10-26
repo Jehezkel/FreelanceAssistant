@@ -61,4 +61,18 @@ public class FreelanceController : ControllerBase
 
         return Ok();
     }
+    [HttpGet]
+    [Route("projects")]
+    public async Task<IActionResult> GetProjects()
+    {
+        var token = await GetAccessTokenAsync();
+        return Ok(await _flClient.FetchProjects(token));
+    }
+
+    private async Task<string> GetAccessTokenAsync()
+    {
+        var currentUser = await _userManager.GetUserAsync(_contextAccessor.HttpContext!.User);
+        var token = await _dbContext.FLApiTokens.FirstOrDefaultAsync(t => t.UserID == currentUser.Id);
+        return token.AccessToken ?? "";
+    }
 }

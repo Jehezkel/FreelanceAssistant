@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
 using WebApi.ApiClient;
+using WebApi.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -39,8 +40,12 @@ services.AddAuthentication(opt =>
 });
 
 services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
-services.AddSingleton<IFreelancerClient, FreelancerClient>();
-services.AddSingleton<MailTemplateService>(s => new MailTemplateService());
+services.AddSingleton<LoginHandler>();
+services.AddHttpClient<IFreelancerClient, FreelancerClient>()
+    .AddHttpMessageHandler<LoginHandler>();
+// services.AddSingleton<IFreelancerClient, FreelancerClient>();
+
+services.AddSingleton<MailTemplateService>();
 services.AddHttpContextAccessor();
 //Temp disable 
 // services.AddHostedService<RefreshManager>();

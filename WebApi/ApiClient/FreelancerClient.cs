@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using WebApi.ApiClient.Responses;
-using WebApi.Models;
+using WebApi.Handlers;
 
 namespace WebApi.ApiClient;
 
@@ -14,17 +11,27 @@ public class FreelancerClient : IFreelancerClient
     private FreelancerConfig _freelancerConfig;
     private readonly ILogger<FreelancerClient> _logger;
     private readonly HttpClient _httpClient;
+
+    // private readonly IHttpClientFactory _httpClientFactory;
+
+    // private readonly HttpClient _httpClient;
+
     // private AccessTokenResponse TokenResponse = new AccessTokenResponse();
 
-    public FreelancerClient(IOptions<FreelancerConfig> options, ILogger<FreelancerClient> logger)
+    public FreelancerClient(IOptions<FreelancerConfig> options, ILogger<FreelancerClient> logger,
+    // IHttpClientFactory httpClientFactory
+    HttpClient httpClient
+    )
     {
+        if (httpClient is null)
+        {
+            throw new ArgumentNullException(nameof(httpClient));
+        }
+
         _freelancerConfig = options.Value;
         _logger = logger;
-        _httpClient = new HttpClient
-        {
-            BaseAddress = new Uri(_freelancerConfig.BaseAddress)
-        };
-
+        _httpClient = httpClient;
+        // _httpClientFactory = httpClientFactory;
     }
     // public bool IsAuthorized
     // {
@@ -81,15 +88,17 @@ public class FreelancerClient : IFreelancerClient
         throw new Exception(String.Format("Verification for code {0} failed", code));
         // return response.Result.Content;
     }
-    public async Task<IEnumerable<Project>> FetchProjects(string access_token)
+    public async Task<IEnumerable<ProjectResponse>> FetchProjects(string access_token)
     {
+        // var _httpClient = _httpClientFactory.CreateClient();
+        // _httpClient.BaseAddress = _freelancerConfig.BaseAddress;
         var activeUri = new Uri(new Uri(_freelancerConfig.BaseAddress), new Uri("projects/0.1/projects/active", UriKind.Relative));
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
-        var responseContent = await _httpClient.GetFromJsonAsync<ProjectsResponse>(activeUri) ?? new ProjectsResponse();
-        if (responseContent.status == "success")
+        var responseContent = await _httpClient.GetFromJsonAsync<ProjectSearchResponse>(activeUri) ?? new ProjectSearchResponse();
+        if (responseContent.Status == "success")
         {
-            return responseContent.result!.projects;
+            return responseContent.Result.Projects;
         }
-        return Enumerable.Empty<Project>();
+        return Enumerable.Empty<ProjectResponse>();
     }
 }
