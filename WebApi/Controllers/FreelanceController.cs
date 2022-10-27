@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.DAL;
 using WebApi.Models;
 using WebApi.ApiClient;
+using System.Security.Claims;
+using WebApi.Mapping;
 
 namespace WebApi.Controllers;
 [ApiController]
@@ -31,8 +33,8 @@ public class FreelanceController : ControllerBase
     public async Task<IActionResult> GetServiceConfigState()
     {
 
-        var currentUser = await _userManager.GetUserAsync(_contextAccessor.HttpContext!.User);
-        var flApiToken = await _dbContext.FLApiTokens.Where(t => t.User == currentUser).FirstOrDefaultAsync();
+        // var currentUser = await _userManager.GetUserAsync(_contextAccessor.HttpContext!.User);
+        var flApiToken = await GetAccessTokenAsync();
         if (flApiToken is null)
         {
             return Ok(new { authUrl = _flClient.getAuthorizationUrl() });
@@ -46,23 +48,16 @@ public class FreelanceController : ControllerBase
         var verResult = await _flClient.VerifyCode(code);
         if (verResult.AccessToken is not null)
         {
-            var user = await _userManager.GetUserAsync(_contextAccessor.HttpContext!.User);
-            var flApiToken = new FLApiToken
-            {
-                AccessToken = verResult.AccessToken,
-                RefreshToken = verResult.RefreshToken!,
-                User = user,
-                UserID = user.Id,
-            };
+            var currentUserID = GetUserId();
+            var flApiToken = verResult.ToFLApiToken(currentUserID);
             _logger.LogInformation("Saving token: {0}", flApiToken);
             _dbContext.FLApiTokens.Add(flApiToken);
             await _dbContext.SaveChangesAsync();
         }
-
         return Ok();
     }
     [HttpGet]
-    [Route("projects")]
+    [Route("Projects")]
     public async Task<IActionResult> GetProjects()
     {
         var token = await GetAccessTokenAsync();
@@ -71,8 +66,13 @@ public class FreelanceController : ControllerBase
 
     private async Task<string> GetAccessTokenAsync()
     {
-        var currentUser = await _userManager.GetUserAsync(_contextAccessor.HttpContext!.User);
-        var token = await _dbContext.FLApiTokens.FirstOrDefaultAsync(t => t.UserID == currentUser.Id);
-        return token.AccessToken ?? "";
+        var currentUserID = GetUserId();
+        var accessTokenValue = await _dbContext.FLApiTokens.Where(t => t.UserID == currentUserID)
+                                            .Select(t => t.AccessToken).FirstOrDefaultAsync();
+        return (accessTokenValue ?? "");
+    }
+    private string GetUserId()
+    {
+        return _contextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

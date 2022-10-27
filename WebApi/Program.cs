@@ -15,7 +15,9 @@ using WebApi.Handlers;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
+
 services.AddDbContext<FLDbContext>(opt => opt.UseNpgsql(config.GetConnectionString("FLDbContext")));
+
 services.Configure<IdentityOptions>(opt =>
 {
     opt.User.RequireUniqueEmail = true;
@@ -40,9 +42,9 @@ services.AddAuthentication(opt =>
 });
 
 services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
-services.AddSingleton<LoginHandler>();
+services.AddSingleton<RequestLoggingHandler>();
 services.AddHttpClient<IFreelancerClient, FreelancerClient>()
-    .AddHttpMessageHandler<LoginHandler>();
+    .AddHttpMessageHandler<RequestLoggingHandler>();
 // services.AddSingleton<IFreelancerClient, FreelancerClient>();
 
 services.AddSingleton<MailTemplateService>();
@@ -79,18 +81,20 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-string localHostPolicy = "localhost";
+///CORS Policy
+string corsPolicyName = "localhost";
 var allowedOrigins = config.GetSection("CORS:AllowedOrigins").Get<string[]>();
-services.AddControllers();
-services.AddCors(o => o.AddPolicy(name: localHostPolicy, policy =>
+services.AddCors(o => o.AddPolicy(name: corsPolicyName, policy =>
 {
     policy.WithOrigins(allowedOrigins);
     policy.AllowAnyHeader();
 }));
 
+// services.AddControllers();
+
 var app = builder.Build();
 app.MapControllers();
-app.UseCors(localHostPolicy);
+app.UseCors(corsPolicyName);
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
