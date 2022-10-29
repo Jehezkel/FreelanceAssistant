@@ -16,16 +16,15 @@ public class FreelanceController : ControllerBase
 {
     private readonly ILogger<FreelanceController> _logger;
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly FLDbContext _dbContext;
+    private readonly IFLDbContext _dbContext;
     private readonly UserManager<AppUser> _userManager;
     private readonly IFreelancerClient _flClient;
 
-    public FreelanceController(ILogger<FreelanceController> logger, IHttpContextAccessor contextAccessor, FLDbContext dbContext, UserManager<AppUser> userManager, IFreelancerClient flClient)
+    public FreelanceController(ILogger<FreelanceController> logger, IHttpContextAccessor contextAccessor, IFLDbContext dbContext, IFreelancerClient flClient)
     {
         _logger = logger;
         _contextAccessor = contextAccessor;
         _dbContext = dbContext;
-        _userManager = userManager;
         _flClient = flClient;
     }
 

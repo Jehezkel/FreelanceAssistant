@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
 
-services.AddDbContext<FLDbContext>(opt => opt.UseNpgsql(config.GetConnectionString("FLDbContext")));
+services.AddDbContext<IFLDbContext, FLDbContext>(opt => opt.UseNpgsql(config.GetConnectionString("FLDbContext")));
 
 services.Configure<IdentityOptions>(opt =>
 {
@@ -45,7 +45,6 @@ services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
 services.AddSingleton<RequestLoggingHandler>();
 services.AddHttpClient<IFreelancerClient, FreelancerClient>()
     .AddHttpMessageHandler<RequestLoggingHandler>();
-// services.AddSingleton<IFreelancerClient, FreelancerClient>();
 
 services.AddSingleton<MailTemplateService>();
 services.AddHttpContextAccessor();
@@ -90,7 +89,6 @@ services.AddCors(o => o.AddPolicy(name: corsPolicyName, policy =>
     policy.AllowAnyHeader();
 }));
 
-// services.AddControllers();
 
 var app = builder.Build();
 app.MapControllers();
@@ -101,7 +99,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseAuthentication();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
@@ -109,33 +106,5 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-
-
-
-
-
-
-
-
-// app.MapGet("/Authorize", (FreelancerClient client) =>
-// {
-//     return Results.Json(new { authUrl = client.getAuthorizationUrl() });
-// });
-// app.MapPost("/VerifyCode", async (string code, FreelancerClient client) =>
-// {
-//     client.verifyCode(code);
-// });
-// app.MapGet("/VerifyCode", async (string code, FreelancerClient client) =>
-// {
-//     client.verifyCode(code);
-//     return Results.Redirect("/");
-// });
-// app.MapGet("/Test", (FreelancerClient client) =>
-// {
-//     return Results.Redirect(client.getAuthorizationUrl());
-// });
-// app.MapGet("/Projects", (FreelancerClient client) => client.fetchProjects());
-// app.MapGet("/auth/google-signin", (string code) => Results.Ok());
 
 app.Run();

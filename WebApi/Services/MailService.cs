@@ -6,7 +6,7 @@ using WebApi.Models;
 
 namespace WebApi.Services;
 
-public class MailService
+public class MailService : IMailService
 {
     private readonly MailSettings _settings;
     private readonly ILogger<MailService> _logger;
