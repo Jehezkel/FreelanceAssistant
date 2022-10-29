@@ -7,6 +7,7 @@ using WebApi.Models;
 using WebApi.ApiClient;
 using System.Security.Claims;
 using WebApi.Mapping;
+using WebApi.Repositories;
 
 namespace WebApi.Controllers;
 [ApiController]
@@ -16,16 +17,16 @@ public class FreelanceController : ControllerBase
 {
     private readonly ILogger<FreelanceController> _logger;
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly IFLDbContext _dbContext;
     private readonly UserManager<AppUser> _userManager;
     private readonly IFreelancerClient _flClient;
+    private readonly IFLApiTokenRepository _fLApiTokenRepository;
 
-    public FreelanceController(ILogger<FreelanceController> logger, IHttpContextAccessor contextAccessor, IFLDbContext dbContext, IFreelancerClient flClient)
+    public FreelanceController(ILogger<FreelanceController> logger, IHttpContextAccessor contextAccessor, IFreelancerClient flClient, IFLApiTokenRepository fLApiTokenRepository)
     {
         _logger = logger;
         _contextAccessor = contextAccessor;
-        _dbContext = dbContext;
         _flClient = flClient;
+        _fLApiTokenRepository = fLApiTokenRepository;
     }
 
     [HttpGet]
@@ -50,8 +51,7 @@ public class FreelanceController : ControllerBase
             var currentUserID = GetUserId();
             var flApiToken = verResult.ToFLApiToken(currentUserID);
             _logger.LogInformation("Saving token: {0}", flApiToken);
-            _dbContext.FLApiTokens.Add(flApiToken);
-            await _dbContext.SaveChangesAsync();
+            await _fLApiTokenRepository.CreateFLApiToken(flApiToken);
         }
         return Ok();
     }
@@ -66,8 +66,7 @@ public class FreelanceController : ControllerBase
     private async Task<string> GetAccessTokenAsync()
     {
         var currentUserID = GetUserId();
-        var accessTokenValue = await _dbContext.FLApiTokens.Where(t => t.UserID == currentUserID)
-                                            .Select(t => t.AccessToken).FirstOrDefaultAsync();
+        var accessTokenValue = await _fLApiTokenRepository.GetAccessToken(currentUserID);
         return (accessTokenValue ?? "");
     }
     private string GetUserId()

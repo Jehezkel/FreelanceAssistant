@@ -1,6 +1,7 @@
 using WebApi.ApiClient;
 using WebApi.Handlers;
 using WebApi.Models;
+using WebApi.Repositories;
 
 namespace WebApi.Services;
 
@@ -23,5 +24,6 @@ public static class InternalServicesInstaller
         services.AddSingleton<MailTemplateService>();
 
         services.AddTransient<TokenService>();
+        services.AddScoped<IFLApiTokenRepository, FLApiTokenRepository>();
     }
 }
