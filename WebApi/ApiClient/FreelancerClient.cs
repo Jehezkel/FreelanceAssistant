@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using WebApi.ApiClient.Requests;
 using WebApi.ApiClient.Responses;
 using WebApi.Handlers;
 
@@ -73,10 +74,24 @@ public class FreelancerClient : IFreelancerClient
         var activeUri = new Uri(new Uri(_freelancerConfig.BaseAddress), new Uri("projects/0.1/projects/active", UriKind.Relative));
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
         var responseContent = await _httpClient.GetFromJsonAsync<ProjectSearchResponse>(activeUri) ?? new ProjectSearchResponse();
+        
         if (responseContent.Status == "success")
         {
             return responseContent.Result.Projects;
         }
+        return Enumerable.Empty<ProjectResponse>();
+    }
+    public async Task<IEnumerable<ProjectResponse>> NewFetchProjects(string access_token)
+    {
+        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
+        var projectRequest = new ProjectRequest();
+        projectRequest.RequestInputObject.MinPrice = 10;
+        var httpRequest = projectRequest.GetHttpRequest(_freelancerConfig.BaseAddress);
+
+        /*if (responseContent.Status == "success")
+        {
+            return responseContent.Result.Projects;
+        }*/
         return Enumerable.Empty<ProjectResponse>();
     }
 }

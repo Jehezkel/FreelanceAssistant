@@ -1,9 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebApi.DAL;
-using WebApi.Models;
 using WebApi.ApiClient;
 using System.Security.Claims;
 using WebApi.Mapping;
@@ -17,7 +13,6 @@ public class FreelanceController : ControllerBase
 {
     private readonly ILogger<FreelanceController> _logger;
     private readonly IHttpContextAccessor _contextAccessor;
-    private readonly UserManager<AppUser> _userManager;
     private readonly IFreelancerClient _flClient;
     private readonly IFLApiTokenRepository _fLApiTokenRepository;
 
@@ -60,7 +55,7 @@ public class FreelanceController : ControllerBase
     public async Task<IActionResult> GetProjects()
     {
         var token = await GetAccessTokenAsync();
-        return Ok(await _flClient.FetchProjects(token));
+        return Ok(await _flClient.NewFetchProjects(token!));
     }
 
     private async Task<string?> GetAccessTokenAsync()

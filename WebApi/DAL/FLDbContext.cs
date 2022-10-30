@@ -12,9 +12,8 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
     }
     public DbSet<UserTempToken> UserTempTokens => Set<UserTempToken>();
 
-    public DbSet<FLApiToken> FLApiTokens => throw new NotImplementedException();
+    public DbSet<FLApiToken> FLApiTokens => Set<FLApiToken>();
 
-    // public DbSet<FLApiToken> FLApiTokens => Set<FLApiToken>();
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

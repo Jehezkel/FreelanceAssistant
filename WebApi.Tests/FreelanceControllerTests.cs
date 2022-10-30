@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using WebApi.ApiClient;
 using WebApi.Controllers;
 using WebApi.DAL;
@@ -38,16 +39,31 @@ public class FreelanceControllerTests
     {
         //Arrange
         var userId = _fixture.Create<string>();
-        _contextAccessor.HttpContext.User.Returns(GetClaimsWithId(userId));
+        _contextAccessor.HttpContext!.User.Returns(GetClaimsWithId(userId));
         var apiToken = _fixture.Build<FLApiToken>().With(t => t.UserID, userId).Create();
-        _flApiTokenRepository.GetAccessToken(userId).Returns<Task>(i => null);
+        _flApiTokenRepository.GetAccessToken(userId).ReturnsNull();
         //Act
         var result = await _sut.GetServiceConfigState();
 
-        var okObjectResult = okObjectResult(result.Result);
+        var okObjectResult = (OkObjectResult)result;
         //Assert
-        // Assert.Equal(new { authUrl = _flClient.getAuthorizationUrl() }, result.AS);
-        From.TaskResult(result).Should().BeNull();
+        okObjectResult.Value.Should().BeEquivalentTo(new { authUrl = _flClient.getAuthorizationUrl() });
+        okObjectResult.StatusCode.Should().Be(200);
+    }
+    [Fact]
+    public async void GetServiceConfigState_ShouldReturnOk_WhenTokenForCurrentUserIsNotNull()
+    {
+        //Arrange
+        var userId = _fixture.Create<string>();
+        _contextAccessor.HttpContext!.User.Returns(GetClaimsWithId(userId));
+        var apiToken = _fixture.Build<FLApiToken>().With(t => t.UserID, userId).Create();
+        _flApiTokenRepository.GetAccessToken(userId).Returns(apiToken.AccessToken);
+        //Act
+        var result = await _sut.GetServiceConfigState();
+        var okResult = (OkResult)result;
+        //Assert
+        result.Should().BeOfType<OkResult>();
+        okResult.StatusCode.Should().Be(200);
     }
 
     private ClaimsPrincipal GetClaimsWithId(string UserId)
