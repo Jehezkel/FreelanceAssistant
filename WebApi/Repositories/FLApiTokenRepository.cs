@@ -19,10 +19,10 @@ public class FLApiTokenRepository : IFLApiTokenRepository
         return await _fLDbContext.SaveChangesAsync();
     }
 
-    public async Task<string> GetAccessToken(string UserId)
+    public async Task<string?> GetAccessToken(string UserId)
     {
         return await _fLDbContext.FLApiTokens.Where(t => t.UserID == UserId)
-                                            .Select(t => t.AccessToken).FirstOrDefaultAsync() ?? "";
+                                            .Select(t => t.AccessToken).FirstOrDefaultAsync();
     }
 
     public async Task<string> GetRefreshToken(string UserId)

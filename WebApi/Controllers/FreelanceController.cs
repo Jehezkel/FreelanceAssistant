@@ -63,11 +63,11 @@ public class FreelanceController : ControllerBase
         return Ok(await _flClient.FetchProjects(token));
     }
 
-    private async Task<string> GetAccessTokenAsync()
+    private async Task<string?> GetAccessTokenAsync()
     {
         var currentUserID = GetUserId();
         var accessTokenValue = await _fLApiTokenRepository.GetAccessToken(currentUserID);
-        return (accessTokenValue ?? "");
+        return accessTokenValue;
     }
     private string GetUserId()
     {
