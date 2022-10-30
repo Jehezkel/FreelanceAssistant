@@ -1,18 +1,8 @@
 using WebApi.FreelanceQueries;
 
 namespace WebApi.ApiClient.Requests;
-public static class ProjectRequest : BaseRequest<ProjectsFilter>
+public  class ProjectRequest : BaseRequest<ProjectsFilter>
 {
-    //public ProjectRequest()
-    //{
-
-    //}
-    public override string EndpointUrl => "/projects/0.1/projects/";
-
-    public override HttpMethod Method => HttpMethod.Post;
-    
-    // public override ProjectsFilter SearchObject { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-
-    // public void MaxPrice()
+    public override string EndpointUrl => "projects/0.1/projects/active";
+    public override HttpMethod Method => HttpMethod.Get;
 }

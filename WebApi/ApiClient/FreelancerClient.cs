@@ -18,6 +18,7 @@ public class FreelancerClient : IFreelancerClient
         _freelancerConfig = options.Value;
         _logger = logger;
         _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri(_freelancerConfig.BaseAddress);
     }
 
     // Provides url to obtain auth code from frontend
@@ -85,13 +86,17 @@ public class FreelancerClient : IFreelancerClient
     {
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
         var projectRequest = new ProjectRequest();
-        projectRequest.RequestInputObject.MinPrice = 10;
-        var httpRequest = projectRequest.GetHttpRequest(_freelancerConfig.BaseAddress);
+        projectRequest.RequestInputObject.MinPrice = 20;
 
+
+        var httpRequest = projectRequest.GetHttpRequest();
+        var result = await _httpClient.SendAsync(httpRequest);
+        var responseContent = await result.Content.ReadFromJsonAsync<ProjectSearchResponse>();
+        return responseContent.Result.Projects;
         /*if (responseContent.Status == "success")
         {
             return responseContent.Result.Projects;
         }*/
-        return Enumerable.Empty<ProjectResponse>();
+        //return Enumerable.Empty<ProjectResponse>();
     }
 }

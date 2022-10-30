@@ -6,11 +6,10 @@ namespace WebApi.FreelanceQueries;
 public record ProjectsFilter
 {
     [JsonIgnore]
-    [UseInRequestParameters]
+    [UseInRequestParameters("min_price")]
     public decimal? MinPrice { get; set; }
-    [UseInRequestParameters]
+    [UseInRequestParameters("max_price")]
     public decimal? MaxPrice { get; set; }
-    public decimal MaxPricex { get; set; }
-    //   [UseInRequestParameters]
-    // public IReadOnlyList<int> Jobs { get; set; } = new List<int>();
+    [UseInRequestParameters]
+    public List<int> Jobs { get; set; } = new List<int>();
 }
