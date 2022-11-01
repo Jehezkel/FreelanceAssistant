@@ -12,8 +12,8 @@ using WebApi.DAL;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(FLDbContext))]
-    [Migration("20221014204753_UserTokensWithType")]
-    partial class UserTokensWithType
+    [Migration("20221101143310_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -224,7 +224,28 @@ namespace WebApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("WebApi.Models.UserToken", b =>
+            modelBuilder.Entity("WebApi.Models.FLApiToken", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AccessToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("ExpireDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("FLApiTokens");
+                });
+
+            modelBuilder.Entity("WebApi.Models.UserTempToken", b =>
                 {
                     b.Property<string>("UserID")
                         .HasColumnType("text");
@@ -232,13 +253,16 @@ namespace WebApi.Migrations
                     b.Property<string>("Type")
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("TokenValue")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("UserID", "Type");
 
-                    b.ToTable("UserTokens");
+                    b.ToTable("UserTempTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -292,10 +316,21 @@ namespace WebApi.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WebApi.Models.UserToken", b =>
+            modelBuilder.Entity("WebApi.Models.FLApiToken", b =>
                 {
                     b.HasOne("WebApi.Models.AppUser", "User")
-                        .WithMany("UserTokens")
+                        .WithOne("FLApiToken")
+                        .HasForeignKey("WebApi.Models.FLApiToken", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApi.Models.UserTempToken", b =>
+                {
+                    b.HasOne("WebApi.Models.AppUser", "User")
+                        .WithMany("UserTempTokens")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -305,7 +340,9 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("WebApi.Models.AppUser", b =>
                 {
-                    b.Navigation("UserTokens");
+                    b.Navigation("FLApiToken");
+
+                    b.Navigation("UserTempTokens");
                 });
 #pragma warning restore 612, 618
         }

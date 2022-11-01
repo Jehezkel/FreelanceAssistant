@@ -27,11 +27,14 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
         builder.Entity<UserTempToken>()
         .Property(t => t.Type).HasConversion(v => v.ToString(), v => (TokenType)Enum.Parse(typeof(TokenType), v));
 
+        builder.Entity<FLApiToken>().HasKey(t => t.UserId);
         builder.Entity<FLApiToken>()
-        .HasOne(t => t.User);
-        builder.Entity<FLApiToken>().HasKey(t => t.UserID);
+        .HasOne(t => t.User)
+        .WithOne(u => u.FLApiToken)
+        .HasForeignKey<FLApiToken>(t => t.UserId);
+
     }
 
-   
+
 
 }

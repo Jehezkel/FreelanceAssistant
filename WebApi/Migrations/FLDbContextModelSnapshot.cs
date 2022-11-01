@@ -224,7 +224,7 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("WebApi.Models.FLApiToken", b =>
                 {
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
                         .HasColumnType("text");
 
                     b.Property<string>("AccessToken")
@@ -238,13 +238,7 @@ namespace WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("UserID");
-
-                    b.HasIndex("UserId");
+                    b.HasKey("UserId");
 
                     b.ToTable("FLApiTokens");
                 });
@@ -323,8 +317,8 @@ namespace WebApi.Migrations
             modelBuilder.Entity("WebApi.Models.FLApiToken", b =>
                 {
                     b.HasOne("WebApi.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("FLApiToken")
+                        .HasForeignKey("WebApi.Models.FLApiToken", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -344,6 +338,8 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("WebApi.Models.AppUser", b =>
                 {
+                    b.Navigation("FLApiToken");
+
                     b.Navigation("UserTempTokens");
                 });
 #pragma warning restore 612, 618

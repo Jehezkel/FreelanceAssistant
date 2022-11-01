@@ -1,8 +1,8 @@
 namespace WebApi.Models;
 public class FLApiToken
 {
-    public AppUser User { get; set; } = null!;
-    public string UserID { get; set; } = null!;
+    public virtual AppUser User { get; set; } = null!;
+    public string UserId { get; set; } = null!;
     public string AccessToken { get; set; } = null!;
     public string RefreshToken { get; set; } = null!;
     public DateTimeOffset ExpireDate { get; set; }

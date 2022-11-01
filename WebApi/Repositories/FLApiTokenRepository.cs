@@ -13,26 +13,25 @@ public class FLApiTokenRepository : IFLApiTokenRepository
     public FLApiTokenRepository(IFLDbContext fLDbContext, UserManager<AppUser> userManager)
     {
         _fLDbContext = fLDbContext;
-        _userManager = userManager;
     }
 
     public async Task<int> CreateFLApiToken(FLApiToken token)
     {
-        var user = await _userManager.FindByIdAsync(token.UserID);
-        token.User = user;
+        //var user = await _userManager.FindByIdAsync(token.UserId);
+        //token.User = user;
         _fLDbContext.FLApiTokens.Add(token);
         return await _fLDbContext.SaveChangesAsync();
     }
 
     public async Task<string?> GetAccessToken(string UserId)
     {
-        return await _fLDbContext.FLApiTokens.Where(t => t.UserID == UserId)
+        return await _fLDbContext.FLApiTokens.Where(t => t.UserId == UserId)
                                             .Select(t => t.AccessToken).FirstOrDefaultAsync();
     }
 
     public async Task<string> GetRefreshToken(string UserId)
     {
-        return await _fLDbContext.FLApiTokens.Where(t => t.UserID == UserId)
+        return await _fLDbContext.FLApiTokens.Where(t => t.UserId == UserId)
                                             .Select(t => t.RefreshToken).FirstOrDefaultAsync() ?? "";
     }
 

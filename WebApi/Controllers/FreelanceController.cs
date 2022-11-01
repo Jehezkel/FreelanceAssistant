@@ -28,7 +28,6 @@ public class FreelanceController : ControllerBase
     public async Task<IActionResult> GetServiceConfigState()
     {
 
-        // var currentUser = await _userManager.GetUserAsync(_contextAccessor.HttpContext!.User);
         var flApiToken = await GetAccessTokenAsync();
         if (flApiToken is null)
         {
@@ -48,8 +47,9 @@ public class FreelanceController : ControllerBase
 
             _logger.LogInformation("Saving token: {0}", flApiToken);
             await _fLApiTokenRepository.CreateFLApiToken(flApiToken);
+            return Ok();
         }
-        return Ok();
+        throw new Exception("Failed to verify provided code with Freelance");
     }
     [HttpGet]
     [Route("Projects")]

@@ -10,7 +10,7 @@ public static class FLToModelMapping
         {
             AccessToken = response.AccessToken,
             RefreshToken = response.RefreshToken,
-            UserID = UserId
+            UserId = UserId
         };
     }
 }
