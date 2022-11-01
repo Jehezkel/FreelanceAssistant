@@ -11,9 +11,10 @@ using WebApi.ApiClient.RequestParams;
 namespace WebApi.ApiClient.Requests;
 
 
-public  abstract class BaseRequest<T> where T : new() {
+public abstract class BaseRequest<T> where T : new()
+{
 
-    public T RequestInputObject { get; init; } = new T();
+    public T RequestInputObject { get; set; } = new T();
     private static List<HttpMethod> ReqBodyMethods => new List<HttpMethod> { HttpMethod.Post, HttpMethod.Patch, HttpMethod.Put };
 
     public HttpRequestMessage GetHttpRequest()
@@ -24,44 +25,46 @@ public  abstract class BaseRequest<T> where T : new() {
         request.Method = this.Method;
         if (this.RequestInputObject is not null && ReqBodyMethods.Contains(this.Method))
         {
-            var searchAsJson = JsonSerializer.Serialize(this.RequestInputObject);
-            request.Content = new StringContent(searchAsJson.ToString(), Encoding.UTF8, "application/json");
+            var formUrlDictionary = getAttributesAsDictionary<UseInUrlEncodedBody>();
+            if (formUrlDictionary is not null)
+            {
+                request.Content = new FormUrlEncodedContent(formUrlDictionary);
+            }
+            else
+            {
+                var searchAsJson = JsonSerializer.Serialize(this.RequestInputObject);
+                request.Content = new StringContent(searchAsJson.ToString(), Encoding.UTF8, "application/json");
+            }
         }
         return request;
     }
-
-
     public abstract string EndpointUrl { get; }
     public abstract HttpMethod Method { get; }
-    public Dictionary<string, string?> QueryParameters { get; set; } = new Dictionary<string, string?>();
-
-    public Uri GetEndpointAndQueryParams() {
-        //var baseAsUri = new Uri(baseUrl);
-        //var resultAsString = new Uri(baseAsUri, this.EndpointUrl).ToString();
+    public Uri GetEndpointAndQueryParams()
+    {
         var resultAsString = new Uri(this.EndpointUrl, UriKind.Relative).ToString();
-        var queryParametersDictionary = getQueryParamsDictionary();
+        var queryParametersDictionary = getAttributesAsDictionary<UseInRequestParameters>();
         if (queryParametersDictionary is not null)
-            resultAsString =  QueryHelpers.AddQueryString(resultAsString, queryParametersDictionary);
+            resultAsString = QueryHelpers.AddQueryString(resultAsString, queryParametersDictionary);
         return new Uri(resultAsString, UriKind.Relative);
     }
-    private Dictionary<string,string?> getQueryParamsDictionary()
+    private Dictionary<string, string?> getAttributesAsDictionary<attribType>() where attribType : NamedAttribute
     {
         var test = RequestInputObject!.GetType().GetProperties()
-            .Where(p => Attribute.GetCustomAttribute(p, typeof(UseInRequestParameters)) is not null).FirstOrDefault();
+            .Where(p => Attribute.GetCustomAttribute(p, typeof(attribType)) is not null).FirstOrDefault();
         return RequestInputObject!.GetType().GetProperties()
-            .Where(p => Attribute.GetCustomAttribute(p, typeof(UseInRequestParameters)) is not null)
-            .Select(p => new { Name= GetNameValueFromAttribute(p)?? p.Name, Value=p.GetValue(RequestInputObject)})
-            .Where(p=>p.Value is not null)
-            //.ToDictionary(p => p.Name, p => (string?)Convert.ToString(p.Value));
+            .Where(p => Attribute.GetCustomAttribute(p, typeof(attribType)) is not null)
+            .Select(p => new { Name = GetNameValueFromAttribute<attribType>(p) ?? p.Name, Value = p.GetValue(RequestInputObject) })
+            .Where(p => p.Value is not null)
             .ToDictionary(p => p.Name, p => GetParamAsString(p.Value!));
     }
     private string? GetParamAsString(object paramValue)
     {
-        if(paramValue is IEnumerable)
+        if (paramValue is IEnumerable && paramValue is ICollection)
         {
             var paramValAsList = paramValue as IEnumerable;
             var midList = new List<string>();
-            foreach(var val in paramValAsList)
+            foreach (var val in paramValAsList)
             {
                 var currVal = Convert.ToString(val);
                 midList.Add(currVal);
@@ -70,8 +73,8 @@ public  abstract class BaseRequest<T> where T : new() {
         }
         return (string?)Convert.ToString(paramValue);
     }
-    private string? GetNameValueFromAttribute(PropertyInfo prop)
+    private string? GetNameValueFromAttribute<attribType>(PropertyInfo prop) where attribType : NamedAttribute
     {
-        return prop.GetCustomAttribute<UseInRequestParameters>()?.Name;
+        return prop.GetCustomAttribute<attribType>()?.Name;
     }
 }

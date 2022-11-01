@@ -45,6 +45,7 @@ public class FreelanceController : ControllerBase
         {
             var currentUserID = GetUserId();
             var flApiToken = verResult.ToFLApiToken(currentUserID);
+
             _logger.LogInformation("Saving token: {0}", flApiToken);
             await _fLApiTokenRepository.CreateFLApiToken(flApiToken);
         }

@@ -7,11 +7,11 @@ namespace WebApi.Services;
 
 public static class InternalServicesInstaller
 {
-    public static void InstallInternalServices(this IServiceCollection services, IConfiguration config)
+    public static void AddInternalServices(this IServiceCollection services, IConfiguration config)
     {
         services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
 
-        services.AddSingleton<RequestLoggingHandler>();
+        services.AddTransient<RequestLoggingHandler>();
         services.AddHttpClient<IFreelancerClient, FreelancerClient>()
             .AddHttpMessageHandler<RequestLoggingHandler>();
 

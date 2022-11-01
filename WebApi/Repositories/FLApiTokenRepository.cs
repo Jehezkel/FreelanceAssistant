@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using WebApi.DAL;
 using WebApi.Models;
@@ -7,14 +8,18 @@ namespace WebApi.Repositories;
 public class FLApiTokenRepository : IFLApiTokenRepository
 {
     private readonly IFLDbContext _fLDbContext;
+    private readonly UserManager<AppUser> _userManager;
 
-    public FLApiTokenRepository(IFLDbContext fLDbContext)
+    public FLApiTokenRepository(IFLDbContext fLDbContext, UserManager<AppUser> userManager)
     {
         _fLDbContext = fLDbContext;
+        _userManager = userManager;
     }
 
     public async Task<int> CreateFLApiToken(FLApiToken token)
     {
+        var user = await _userManager.FindByIdAsync(token.UserID);
+        token.User = user;
         _fLDbContext.FLApiTokens.Add(token);
         return await _fLDbContext.SaveChangesAsync();
     }

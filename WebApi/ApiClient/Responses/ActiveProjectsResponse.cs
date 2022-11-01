@@ -11,9 +11,9 @@ public record ProjectSearchResponse
 public class ProjectsResultResponse
 {
     [JsonPropertyName("projects")]
-    public IReadOnlyList<ProjectResponse> Projects { get; init; } = new List<ProjectResponse>();
+    public IReadOnlyList<ActiveProjectsResponse> Projects { get; init; } = new List<ActiveProjectsResponse>();
 }
-public class ProjectResponse
+public class ActiveProjectsResponse
 {
     [JsonPropertyName("id")]
     public int Id { get; init; }

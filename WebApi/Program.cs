@@ -4,9 +4,9 @@ var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 var config = builder.Configuration;
 //EF core + authentication + swagger+ cors
-services.InstallExternalServices(config);
+services.AddExternalServices(config);
 //Project services: mailservice/FL webapiclient
-services.InstallInternalServices(config);
+services.AddInternalServices(config);
 
 var app = builder.Build();
 //Use swagger/authentiication/cors

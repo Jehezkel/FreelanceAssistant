@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
+using WebApi.ApiClient.RequestInputs;
 using WebApi.ApiClient.Requests;
 using WebApi.ApiClient.Responses;
 using WebApi.Handlers;
@@ -36,7 +37,7 @@ public class FreelancerClient : IFreelancerClient
         return authUrl;
     }
     //Verify code obtained by user from frontend and get AccessToken
-    public async Task<AccessTokenResponse> VerifyCode(string code)
+    public async Task<AccessTokenResponse> VerifyCode_Old(string code)
     {
         var tokenUri = new Uri(new Uri(_freelancerConfig.AuthEndpoint), new Uri("token", UriKind.Relative));
 
@@ -70,7 +71,25 @@ public class FreelancerClient : IFreelancerClient
         throw new Exception(String.Format("Verification for code {0} failed", code));
         // return response.Result.Content;
     }
-    public async Task<IEnumerable<ProjectResponse>> FetchProjects(string access_token)
+    public async Task<AccessTokenResponse> VerifyCode(string code)
+    {
+        var request = new VerifyCodeRequest();
+        var inputObj = new VerifyCodeInput(_freelancerConfig);
+        inputObj.Code = code;
+        request.RequestInputObject = inputObj;
+
+        HttpClient authClient = new HttpClient { BaseAddress = new Uri(_freelancerConfig.AuthEndpoint) };
+        var httpRequest = request.GetHttpRequest();
+        var response = await authClient.SendAsync(httpRequest);
+        if(response.Content is not null && response.IsSuccessStatusCode)
+        {
+            var result = await response!.Content.ReadFromJsonAsync<AccessTokenResponse>() ?? new AccessTokenResponse();
+            _logger.LogDebug("Success: {0}", result);
+            return result;
+        }
+        throw new Exception(String.Format("Verification for code {0} failed", code));
+    }
+    public async Task<IEnumerable<ActiveProjectsResponse>> FetchProjects(string access_token)
     {
         var activeUri = new Uri(new Uri(_freelancerConfig.BaseAddress), new Uri("projects/0.1/projects/active", UriKind.Relative));
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
@@ -80,13 +99,13 @@ public class FreelancerClient : IFreelancerClient
         {
             return responseContent.Result.Projects;
         }
-        return Enumerable.Empty<ProjectResponse>();
+        return Enumerable.Empty<ActiveProjectsResponse>();
     }
-    public async Task<IEnumerable<ProjectResponse>> NewFetchProjects(string access_token)
+    public async Task<IEnumerable<ActiveProjectsResponse>> NewFetchProjects(string access_token)
     {
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
-        var projectRequest = new ProjectRequest();
-        projectRequest.RequestInputObject.MinPrice = 20;
+        var projectRequest = new ActiveProjectsRequest();
+        projectRequest.RequestInputObject.MinPrice = 40;
 
 
         var httpRequest = projectRequest.GetHttpRequest();
