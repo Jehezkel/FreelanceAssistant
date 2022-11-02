@@ -6,6 +6,7 @@ public class FLApiToken
     public string AccessToken { get; set; } = null!;
     public string RefreshToken { get; set; } = null!;
     public DateTimeOffset ExpireDate { get; set; }
+    public int FLUserID { get; set; }
     public override string ToString()
     {
         return $@"AccessToken: {this.AccessToken}

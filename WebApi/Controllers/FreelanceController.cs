@@ -44,7 +44,9 @@ public class FreelanceController : ControllerBase
         {
             var currentUserID = GetUserId();
             var flApiToken = verResult.ToFLApiToken(currentUserID);
-
+            var flUser = await _flClient.GetUser(flApiToken.AccessToken);
+            _logger.LogInformation("Received user info: {0}", flUser);
+            flApiToken.FLUserID = flUser.UserId;
             _logger.LogInformation("Saving token: {0}", flApiToken);
             await _fLApiTokenRepository.CreateFLApiToken(flApiToken);
             return Ok();
@@ -56,7 +58,7 @@ public class FreelanceController : ControllerBase
     public async Task<IActionResult> GetProjects()
     {
         var token = await GetAccessTokenAsync();
-        return Ok(await _flClient.NewFetchProjects(token!));
+        return Ok(await _flClient.FetchProjects(token!));
     }
 
     private async Task<string?> GetAccessTokenAsync()
@@ -69,4 +71,5 @@ public class FreelanceController : ControllerBase
     {
         return _contextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
+ 
 }

@@ -7,17 +7,13 @@ namespace WebApi.ApiClient.RequestInputs
         public VerifyCodeInput()
         {
         }
-        public VerifyCodeInput(FreelancerConfig config)
+        public VerifyCodeInput(FreelancerConfig config, string code)
         {
             this.RedirectUri = config.RedirectUri;
             this.ClientSecret = config.ClientSecret;
             this.ClientId= config.ClientID;
+            this.Code = code;
         }
-        //verifyCodeParams.Add("grant_type", "authorization_code");
-        //verifyCodeParams.Add("code", code);
-        //verifyCodeParams.Add("client_id", _freelancerConfig.ClientID);
-        //verifyCodeParams.Add("client_secret", _freelancerConfig.ClientSecret);
-        //verifyCodeParams.Add("redirect_uri", _freelancerConfig.RedirectUri);
         [UseInUrlEncodedBody("grant_type")]
         public string GrantType { get; set; } = "authorization_code";
         [UseInUrlEncodedBody("code")]

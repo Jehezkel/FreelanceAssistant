@@ -8,7 +8,6 @@ namespace WebApi.Repositories;
 public class FLApiTokenRepository : IFLApiTokenRepository
 {
     private readonly IFLDbContext _fLDbContext;
-    private readonly UserManager<AppUser> _userManager;
 
     public FLApiTokenRepository(IFLDbContext fLDbContext, UserManager<AppUser> userManager)
     {
@@ -29,19 +28,15 @@ public class FLApiTokenRepository : IFLApiTokenRepository
                                             .Select(t => t.AccessToken).FirstOrDefaultAsync();
     }
 
-    public async Task<string> GetRefreshToken(string UserId)
+    public async Task<string?> GetRefreshToken(string UserId)
     {
         return await _fLDbContext.FLApiTokens.Where(t => t.UserId == UserId)
-                                            .Select(t => t.RefreshToken).FirstOrDefaultAsync() ?? "";
+                                            .Select(t => t.RefreshToken).FirstOrDefaultAsync();
     }
 
     public async Task<int> UpdateToken(string refreshToken, FLApiToken token)
     {
         var currToken = await _fLDbContext.FLApiTokens.Where(t => t.RefreshToken == refreshToken).FirstOrDefaultAsync();
-        // currToken!.AccessToken = token.AccessToken;
-        // currToken.RefreshToken = token.RefreshToken;
-        // currToken.ExpireDate = token.ExpireDate;
-        //not sure if this assignment will work...
         currToken = token;
         return await _fLDbContext.SaveChangesAsync();
     }

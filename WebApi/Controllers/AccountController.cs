@@ -49,7 +49,7 @@ public class AccountController : ControllerBase
         {
             var activationToken = await GenerateTempToken(user, TokenType.Activation);
             _logger.LogInformation("Sending activation email to {0} with code {1}", user.Email, activationToken.TokenValue);
-            await _mailService.SendActivationMail(user, activationToken.TokenValue);
+            _ = _mailService.SendActivationMail(user, activationToken.TokenValue);
             return Ok();
 
         }

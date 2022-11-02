@@ -11,18 +11,34 @@ using WebApi.ApiClient.RequestParams;
 namespace WebApi.ApiClient.Requests;
 
 
-public abstract class BaseRequest<T> where T : new()
+public abstract class BaseRequest
+{
+    public abstract string EndpointUrl { get; }
+    public abstract HttpMethod Method { get; }
+    public virtual HttpRequestMessage GetHttpRequest()
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = this.Method,
+            RequestUri = new Uri(this.EndpointUrl, UriKind.Relative)
+        };
+        return request;
+    }
+ }
+
+public abstract class BaseRequest<T>  : BaseRequest where T : new ()
 {
 
     public T RequestInputObject { get; set; } = new T();
     private static List<HttpMethod> ReqBodyMethods => new List<HttpMethod> { HttpMethod.Post, HttpMethod.Patch, HttpMethod.Put };
 
-    public HttpRequestMessage GetHttpRequest()
+    public override HttpRequestMessage GetHttpRequest()
     {
-        Uri endpointUri = GetEndpointAndQueryParams();
-        var request = new HttpRequestMessage();
-        request.RequestUri = endpointUri;
-        request.Method = this.Method;
+        var request = new HttpRequestMessage
+        {
+            RequestUri = GetEndpointAndQueryParams(),
+            Method = this.Method
+        };
         if (this.RequestInputObject is not null && ReqBodyMethods.Contains(this.Method))
         {
             var formUrlDictionary = getAttributesAsDictionary<UseInUrlEncodedBody>();
@@ -38,8 +54,6 @@ public abstract class BaseRequest<T> where T : new()
         }
         return request;
     }
-    public abstract string EndpointUrl { get; }
-    public abstract HttpMethod Method { get; }
     public Uri GetEndpointAndQueryParams()
     {
         var resultAsString = new Uri(this.EndpointUrl, UriKind.Relative).ToString();
@@ -54,7 +68,7 @@ public abstract class BaseRequest<T> where T : new()
             .Where(p => Attribute.GetCustomAttribute(p, typeof(attribType)) is not null).FirstOrDefault();
         return RequestInputObject!.GetType().GetProperties()
             .Where(p => Attribute.GetCustomAttribute(p, typeof(attribType)) is not null)
-            .Select(p => new { Name = GetNameValueFromAttribute<attribType>(p) ?? p.Name, Value = p.GetValue(RequestInputObject) })
+            .Select(p => new { Name = GetNameValueFromAttribute<attribType>(p), Value = p.GetValue(RequestInputObject) })
             .Where(p => p.Value is not null)
             .ToDictionary(p => p.Name, p => GetParamAsString(p.Value!));
     }
@@ -73,8 +87,8 @@ public abstract class BaseRequest<T> where T : new()
         }
         return (string?)Convert.ToString(paramValue);
     }
-    private string? GetNameValueFromAttribute<attribType>(PropertyInfo prop) where attribType : NamedAttribute
+    private string GetNameValueFromAttribute<attribType>(PropertyInfo prop) where attribType : NamedAttribute
     {
-        return prop.GetCustomAttribute<attribType>()?.Name;
+        return prop.GetCustomAttribute<attribType>()?.Name ?? prop.Name;
     }
 }

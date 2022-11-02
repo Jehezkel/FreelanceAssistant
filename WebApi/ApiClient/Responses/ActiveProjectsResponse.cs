@@ -1,19 +1,19 @@
 using System.Text.Json.Serialization;
 
 namespace WebApi.ApiClient.Responses;
-public record ProjectSearchResponse
+public record ActiveProjectResponse
 {
     [JsonPropertyName("status")]
     public string Status { get; init; } = null!;
     [JsonPropertyName("result")]
-    public ProjectsResultResponse Result { get; init; } = null!;
+    public ActiveProjectResultResponse Result { get; init; } = null!;
 }
-public class ProjectsResultResponse
+public record ActiveProjectResultResponse
 {
     [JsonPropertyName("projects")]
-    public IReadOnlyList<ActiveProjectsResponse> Projects { get; init; } = new List<ActiveProjectsResponse>();
+    public IReadOnlyList<ProjectResponse> Projects { get; init; } = new List<ProjectResponse>();
 }
-public class ActiveProjectsResponse
+public record ProjectResponse
 {
     [JsonPropertyName("id")]
     public int Id { get; init; }
@@ -29,6 +29,8 @@ public class ActiveProjectsResponse
     public CurrencyResponse Currency { get; init; } = new CurrencyResponse();
     [JsonPropertyName("bid_stats")]
     public BidStatsResponse BidStats { get; init; } = new BidStatsResponse();
+    [JsonPropertyName("seo_url")]
+    public string SeoUrl { get; set; } = null!;
 
 }
 public record BudgetResponse
