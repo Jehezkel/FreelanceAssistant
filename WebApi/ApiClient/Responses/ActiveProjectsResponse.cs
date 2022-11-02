@@ -1,14 +1,7 @@
 using System.Text.Json.Serialization;
 
 namespace WebApi.ApiClient.Responses;
-public record ActiveProjectResponse
-{
-    [JsonPropertyName("status")]
-    public string Status { get; init; } = null!;
-    [JsonPropertyName("result")]
-    public ActiveProjectResultResponse Result { get; init; } = null!;
-}
-public record ActiveProjectResultResponse
+public record ActiveProjectsResponse
 {
     [JsonPropertyName("projects")]
     public IReadOnlyList<ProjectResponse> Projects { get; init; } = new List<ProjectResponse>();

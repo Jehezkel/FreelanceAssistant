@@ -1,17 +1,13 @@
 ﻿using System.Collections.Generic;
 
 namespace WebApi.ApiClient.Responses;
-public class JobsRequestResponse
-{
-    public string Status { get; set; } = null!;
-    public IReadOnlyList<JobsResponse> Jobs { get; set; } = new List<JobsResponse>();
-}
-public class JobsResponse
+
+public record JobResponse
 {
     public string Name { get; set; }= null!;
     public CategoryResponse Category { get; set; }=null!;
 }
-public class CategoryResponse
+public record CategoryResponse
 {
     public int Id { get; set; }
     public string Name { get; set; } = null!;

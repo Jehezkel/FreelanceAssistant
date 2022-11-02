@@ -42,7 +42,7 @@ public abstract class BaseRequest<T>  : BaseRequest where T : new ()
         if (this.RequestInputObject is not null && ReqBodyMethods.Contains(this.Method))
         {
             var formUrlDictionary = getAttributesAsDictionary<UseInUrlEncodedBody>();
-            if (formUrlDictionary is not null)
+            if (formUrlDictionary.Count >0)
             {
                 request.Content = new FormUrlEncodedContent(formUrlDictionary);
             }

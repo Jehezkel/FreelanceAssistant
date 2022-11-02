@@ -6,6 +6,7 @@ using WebApi.ApiClient.Requests;
 using WebApi.ApiClient.Responses;
 using WebApi.FreelanceQueries;
 using WebApi.Handlers;
+using WebApi.Models;
 
 namespace WebApi.ApiClient;
 
@@ -59,29 +60,71 @@ public class FreelancerClient : IFreelancerClient
 
         var httpRequest = projectRequest.GetHttpRequest();
         var result = await _httpClient.SendAsync(httpRequest);
-        var responseContent = await result.Content.ReadFromJsonAsync<ActiveProjectResponse>();
-        if (responseContent?.Status == "success")
+        var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<ActiveProjectsResponse>>();
+        if (response is not null && response.Status == "success")
         {
-            return responseContent.Result.Projects;
+            return response.Result.Projects;
         }
 
         var exceptionMessage = await result.Content.ReadAsStringAsync();
         throw new FLApiClientException(exceptionMessage);
     }
 
-    public async Task<UserResponse> GetUser(string access_token)
+    public async Task<SelfInformationResponse> GetUser(string access_token)
     {
         _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
 
         var selfRequest = new SelfInformationRequest();
         var httpRequest = selfRequest.GetHttpRequest();
         var result = await _httpClient.SendAsync(httpRequest);
-        var response = await result.Content.ReadFromJsonAsync<SelfInformationResponse>();
-        if (response?.Status == "success")
+        var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<SelfInformationResponse>>();
+        if (response is not null && response?.Status == "success")
         {
             return response.Result;
         }
         var exceptionMessage = await result.Content.ReadAsStringAsync();
         throw new FLApiClientException(exceptionMessage);
     }
+
+    public async Task<IReadOnlyList<JobResponse>> GetJobs(string access_token, JobsInput? input = null)
+    {
+        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
+        var requestCreator = new JobsRequest();
+        if (input is not null)
+        {
+            requestCreator.RequestInputObject = input;
+        }
+        var request = requestCreator.GetHttpRequest();
+        var result = await _httpClient.SendAsync(request);
+        var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<List<JobResponse>>>();
+        if (response is not null && response?.Status == "success")
+        {
+            return response.Result;
+        }
+        var exceptionMessage = await result.Content.ReadAsStringAsync();
+        throw new FLApiClientException(exceptionMessage);
+    }
+
+    public async Task<CreateBidResponse> CreateBid(FLApiToken fLApiToken, CreateBidInput? input = null)
+    {
+        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", fLApiToken.AccessToken);
+        var requestCreator = new CreateBidRequest();
+        if(input is not null)
+        {
+            requestCreator.RequestInputObject = input;
+           
+        }
+        requestCreator.RequestInputObject.BidderId = fLApiToken.FLUserID;
+        var request = requestCreator.GetHttpRequest();
+        var result = await _httpClient.SendAsync(request);
+        var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<CreateBidResponse>>();
+        if (response is not null && response?.Status == "success")
+        {
+            return response.Result;
+        }
+        var exceptionMessage = await result.Content.ReadAsStringAsync();
+        throw new FLApiClientException(exceptionMessage);
+    }
+
+
 }

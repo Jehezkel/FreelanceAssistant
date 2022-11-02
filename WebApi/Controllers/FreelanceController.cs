@@ -4,6 +4,8 @@ using WebApi.ApiClient;
 using System.Security.Claims;
 using WebApi.Mapping;
 using WebApi.Repositories;
+using WebApi.ApiClient.RequestInputs;
+using WebApi.Models;
 
 namespace WebApi.Controllers;
 [ApiController]
@@ -60,7 +62,23 @@ public class FreelanceController : ControllerBase
         var token = await GetAccessTokenAsync();
         return Ok(await _flClient.FetchProjects(token!));
     }
-
+    [HttpPost]
+    [Route("CreateBid")]
+    public async Task<IActionResult> CreateBid([FromQuery] int ProjectId, [FromBody] CreateBidInput body)
+    {
+        var token = await GetFLApiToken();
+        if (token is not null)
+        {
+            await _flClient.CreateBid(token, body);
+        }
+        return Ok();
+    }
+    private async Task<FLApiToken> GetFLApiToken()
+    {
+        var currentUserID = GetUserId();
+        var accessTokenValue = await _fLApiTokenRepository.GetFLApiToken(currentUserID);
+        return accessTokenValue;
+    }
     private async Task<string?> GetAccessTokenAsync()
     {
         var currentUserID = GetUserId();
@@ -71,5 +89,5 @@ public class FreelanceController : ControllerBase
     {
         return _contextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
- 
+
 }

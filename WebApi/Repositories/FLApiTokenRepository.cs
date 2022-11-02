@@ -21,7 +21,11 @@ public class FLApiTokenRepository : IFLApiTokenRepository
         _fLDbContext.FLApiTokens.Add(token);
         return await _fLDbContext.SaveChangesAsync();
     }
-
+    public async Task<FLApiToken?> GetFLApiToken(string UserId)
+    {
+        return await _fLDbContext.FLApiTokens.Where(t => t.UserId == UserId)
+                                           .FirstOrDefaultAsync();
+    }
     public async Task<string?> GetAccessToken(string UserId)
     {
         return await _fLDbContext.FLApiTokens.Where(t => t.UserId == UserId)
