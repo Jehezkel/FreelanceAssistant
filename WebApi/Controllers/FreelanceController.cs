@@ -67,9 +67,10 @@ public class FreelanceController : ControllerBase
     public async Task<IActionResult> CreateBid([FromQuery] int ProjectId, [FromBody] CreateBidInput body)
     {
         var token = await GetFlApiTokenForCurrentUser();
+        body.BidderId = token.FLUserID;
         if (token is not null)
         {
-            await _flClient.CreateBid(token, body);
+            await _flClient.CreateBid(token.AccessToken, body);
             return Ok();
         }
         return Problem(detail: "Configure integration token first! Token for Freelancer  not found", 

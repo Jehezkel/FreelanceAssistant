@@ -1,11 +1,8 @@
-using System.Text.Json;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 using WebApi.ApiClient.RequestInputs;
 using WebApi.ApiClient.Requests;
 using WebApi.ApiClient.Responses;
 using WebApi.FreelanceQueries;
-using WebApi.Handlers;
 using WebApi.Models;
 
 namespace WebApi.ApiClient;
@@ -32,112 +29,44 @@ public class FreelancerClient : IFreelancerClient
         var baseUrl = new Uri(_freelancerConfig.AuthEndpoint);
         return new Uri(baseUrl, endpointWithParams).ToString();
     }
-    //Verify code obtained by user from frontend and get AccessToken
-    public async Task<VerifyCodeResponse> VerifyCode(string code)
-    {
-        var request = new VerifyCodeRequest(_freelancerConfig, code);
-
-        HttpClient authClient = new HttpClient { BaseAddress = new Uri(_freelancerConfig.AuthEndpoint) };
-        var httpRequest = request.GetHttpRequest();
-        var response = await authClient.SendAsync(httpRequest);
-        if (response.Content is not null && response.IsSuccessStatusCode)
-        {
-            var result = await response!.Content.ReadFromJsonAsync<VerifyCodeResponse>() ?? new VerifyCodeResponse();
-            _logger.LogDebug("Success: {0}", result);
-            return result;
-        }
-        var respContent = await response.Content!.ReadAsStringAsync();
-        throw new FLApiClientException($"Authorization for code {code} failed with message:\n {respContent}");
-    }
-    public async Task<IEnumerable<ProjectResponse>> FetchProjects(string access_token, ActiveProjectsInput? input = null)
-    {
-        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
-        var projectRequest = new ActiveProjectsRequest();
-        if (input is not null)
-        {
-            projectRequest.RequestInputObject = input;
-        }
-
-        var httpRequest = projectRequest.GetHttpRequest();
-        var result = await _httpClient.SendAsync(httpRequest);
-        var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<ActiveProjectsResponse>>();
-        if (response is not null && response.Status == "success")
-        {
-            return response.Result.Projects;
-        }
-
-        var exceptionMessage = await result.Content.ReadAsStringAsync();
-        throw new FLApiClientException(exceptionMessage);
-    }
-
-    public async Task<SelfInformationResponse> GetUser(string access_token)
-    {
-        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
-
-        var selfRequest = new SelfInformationRequest();
-        var httpRequest = selfRequest.GetHttpRequest();
-        var result = await _httpClient.SendAsync(httpRequest);
-        var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<SelfInformationResponse>>();
-        if (response is not null && response?.Status == "success")
-        {
-            return response.Result;
-        }
-        var exceptionMessage = await result.Content.ReadAsStringAsync();
-        throw new FLApiClientException(exceptionMessage);
-    }
-
-    public async Task<IReadOnlyList<JobResponse>> GetJobs(string access_token, JobsInput? input = null)
-    {
-        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", access_token);
-        var requestCreator = new JobsRequest();
-        if (input is not null)
-        {
-            requestCreator.RequestInputObject = input;
-        }
-        var request = requestCreator.GetHttpRequest();
-        var result = await _httpClient.SendAsync(request);
-        var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<List<JobResponse>>>();
-        if (response is not null && response?.Status == "success")
-        {
-            return response.Result;
-        }
-        var exceptionMessage = await result.Content.ReadAsStringAsync();
-        throw new FLApiClientException(exceptionMessage);
-    }
-
-    //public async Task<CreateBidResponse> CreateBid(FLApiToken fLApiToken, CreateBidInput? input = null)
-    //{
-    //    _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", fLApiToken.AccessToken);
-    //    var requestCreator = new CreateBidRequest();
-    //    if (input is not null)
-    //    {
-    //        requestCreator.RequestInputObject = input;
-
-    //    }
-    //    requestCreator.RequestInputObject.BidderId = fLApiToken.FLUserID;
-    //    var request = requestCreator.GetHttpRequest();
-    //    var result = await _httpClient.SendAsync(request);
-    //    var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<CreateBidResponse>>();
-    //    if (response is not null && response?.Status == "success")
-    //    {
-    //        return response.Result;
-    //    }
-    //    var exceptionMessage = await result.Content.ReadAsStringAsync();
-    //    throw new FLApiClientException(exceptionMessage);
-    //}
-    public async Task<CreateBidResponse> CreateBid(FLApiToken fLApiToken, CreateBidInput input) =>
-        await ExecuteRequest<CreateBidResponse, CreateBidRequest, CreateBidInput>(fLApiToken.AccessToken, input);
-    private async Task<ResponseClass> ExecuteRequest<ResponseClass, ReqCreatorClass, InputClass>(string accessToken, InputClass inputObject)
+    public async Task<VerifyCodeResponse> VerifyCode(string code) =>
+        await ExecuteRequest<VerifyCodeResponse, VerifyCodeRequest, VerifyCodeInput>(new VerifyCodeInput(_freelancerConfig, code));
+    public async Task<List<ProjectResponse>> FetchProjects(string access_token, ActiveProjectsInput? input = null) =>
+         await ExecuteRequest<List<ProjectResponse>, ActiveProjectsRequest, ActiveProjectsInput>(input, access_token);
+    public async Task<SelfInformationResponse> GetUser(string access_token) =>
+            await ExecuteRequest<SelfInformationResponse, SelfInformationRequest>(access_token);
+    public async Task<List<JobResponse>> GetJobs(string access_token, JobsInput? input = null) =>
+            await ExecuteRequest<List<JobResponse>, JobsRequest, JobsInput>(input, access_token);
+    public async Task<CreateBidResponse> CreateBid(string access_token, CreateBidInput input) => 
+            await ExecuteRequest<CreateBidResponse, CreateBidRequest, CreateBidInput>(input, access_token);
+    
+    private async Task<ResponseClass> ExecuteRequest<ResponseClass, ReqCreatorClass, InputClass>(InputClass? inputObject, string? accessToken = null)
         where ReqCreatorClass : BaseRequest<InputClass>, new()
         where ResponseClass : new()
         where InputClass : new()
     {
-        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", accessToken);
-
         var reqCreatorObject = new ReqCreatorClass();
         reqCreatorObject.RequestInputObject = inputObject;
         var httpRequest = reqCreatorObject.GetHttpRequest();
-        var response = await _httpClient.SendAsync(httpRequest);
+        return await SendHttpReqMessage<ResponseClass>(httpRequest, accessToken);
+    }
+    private async Task<ResponseClass> ExecuteRequest<ResponseClass, ReqCreatorClass>(string? accessToken = null)
+       where ReqCreatorClass : BaseRequest, new()
+       where ResponseClass : new()
+    {
+        var reqCreatorObject = new ReqCreatorClass();
+        var httpRequest = reqCreatorObject.GetHttpRequest();
+        return await SendHttpReqMessage<ResponseClass>(httpRequest, accessToken);
+    }
+    private async Task<ResponseClass> SendHttpReqMessage<ResponseClass>(HttpRequestMessage requestMessage, string? accessToken)
+        where ResponseClass : new()
+    {
+        if (accessToken is not null)
+        {
+            _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", accessToken);
+        }
+
+        var response = await _httpClient.SendAsync(requestMessage);
         if (response.IsSuccessStatusCode)
         {
             var resultObject = await response.Content.ReadFromJsonAsync<ResponseWrapper<ResponseClass>>();
@@ -153,7 +82,6 @@ public class FreelancerClient : IFreelancerClient
         {
             throw new FLApiClientException(await response.Content.ReadAsStringAsync());
         }
-
     }
 
 

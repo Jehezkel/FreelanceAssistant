@@ -36,7 +36,7 @@ public abstract class BaseRequest<T>  : BaseRequest where T : new ()
     {
 
     }
-    public T RequestInputObject { get; set; } = new T();
+    public T? RequestInputObject { get; set; }
     private static List<HttpMethod> ReqBodyMethods => new List<HttpMethod> { HttpMethod.Post, HttpMethod.Patch, HttpMethod.Put };
 
     public override HttpRequestMessage GetHttpRequest()
