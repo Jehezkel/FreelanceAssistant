@@ -66,14 +66,16 @@ public class FreelanceController : ControllerBase
     [Route("CreateBid")]
     public async Task<IActionResult> CreateBid([FromQuery] int ProjectId, [FromBody] CreateBidInput body)
     {
-        var token = await GetFLApiToken();
+        var token = await GetFlApiTokenForCurrentUser();
         if (token is not null)
         {
             await _flClient.CreateBid(token, body);
+            return Ok();
         }
-        return Ok();
+        return Problem(detail: "Configure integration token first! Token for Freelancer  not found", 
+                        title: "Integration not configured");
     }
-    private async Task<FLApiToken> GetFLApiToken()
+    private async Task<FLApiToken> GetFlApiTokenForCurrentUser()
     {
         var currentUserID = GetUserId();
         var accessTokenValue = await _fLApiTokenRepository.GetFLApiToken(currentUserID);

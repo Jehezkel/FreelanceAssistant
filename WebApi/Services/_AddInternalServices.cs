@@ -9,21 +9,23 @@ public static class InternalServicesInstaller
 {
     public static void AddInternalServices(this IServiceCollection services, IConfiguration config)
     {
-        services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
-
-        services.AddTransient<RequestLoggingHandler>();
-        services.AddHttpClient<IFreelancerClient, FreelancerClient>()
-            .AddHttpMessageHandler<RequestLoggingHandler>();
 
         //Temp disable 
         // services.AddHostedService<RefreshManager>();
+        
+        services.AddTransient<ITokenService,TokenService>();
 
         services.Configure<MailSettings>(config.GetSection("MailSettings"));
         services.AddTransient<MailService>();
-
         services.AddSingleton<MailTemplateService>();
 
-        services.AddTransient<TokenService>();
+
+        services.AddTransient<RequestLoggingHandler>();
+
+        services.Configure<FreelancerConfig>(config.GetSection("Freelancer"));
+        services.AddHttpClient<IFreelancerClient, FreelancerClient>()
+            .AddHttpMessageHandler<RequestLoggingHandler>();
+
         services.AddScoped<IFLApiTokenRepository, FLApiTokenRepository>();
     }
 }

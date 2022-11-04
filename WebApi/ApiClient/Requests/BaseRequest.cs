@@ -28,7 +28,14 @@ public abstract class BaseRequest
 
 public abstract class BaseRequest<T>  : BaseRequest where T : new ()
 {
+    public BaseRequest(T requestInputObject)
+    {
+        RequestInputObject = requestInputObject;
+    }
+    public BaseRequest()
+    {
 
+    }
     public T RequestInputObject { get; set; } = new T();
     private static List<HttpMethod> ReqBodyMethods => new List<HttpMethod> { HttpMethod.Post, HttpMethod.Patch, HttpMethod.Put };
 

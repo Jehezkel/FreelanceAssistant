@@ -7,6 +7,6 @@ namespace WebApi.ApiClient.Responses
         [JsonPropertyName("status")]
         public string Status { get; init; } = null!;
         [JsonPropertyName("result")]
-        public T? Result { get; init; }
+        public T Result { get; init; } = default!;
     }
 }

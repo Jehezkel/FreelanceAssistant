@@ -105,25 +105,55 @@ public class FreelancerClient : IFreelancerClient
         throw new FLApiClientException(exceptionMessage);
     }
 
-    public async Task<CreateBidResponse> CreateBid(FLApiToken fLApiToken, CreateBidInput? input = null)
+    //public async Task<CreateBidResponse> CreateBid(FLApiToken fLApiToken, CreateBidInput? input = null)
+    //{
+    //    _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", fLApiToken.AccessToken);
+    //    var requestCreator = new CreateBidRequest();
+    //    if (input is not null)
+    //    {
+    //        requestCreator.RequestInputObject = input;
+
+    //    }
+    //    requestCreator.RequestInputObject.BidderId = fLApiToken.FLUserID;
+    //    var request = requestCreator.GetHttpRequest();
+    //    var result = await _httpClient.SendAsync(request);
+    //    var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<CreateBidResponse>>();
+    //    if (response is not null && response?.Status == "success")
+    //    {
+    //        return response.Result;
+    //    }
+    //    var exceptionMessage = await result.Content.ReadAsStringAsync();
+    //    throw new FLApiClientException(exceptionMessage);
+    //}
+    public async Task<CreateBidResponse> CreateBid(FLApiToken fLApiToken, CreateBidInput input) =>
+        await ExecuteRequest<CreateBidResponse, CreateBidRequest, CreateBidInput>(fLApiToken.AccessToken, input);
+    private async Task<ResponseClass> ExecuteRequest<ResponseClass, ReqCreatorClass, InputClass>(string accessToken, InputClass inputObject)
+        where ReqCreatorClass : BaseRequest<InputClass>, new()
+        where ResponseClass : new()
+        where InputClass : new()
     {
-        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", fLApiToken.AccessToken);
-        var requestCreator = new CreateBidRequest();
-        if(input is not null)
+        _httpClient.DefaultRequestHeaders.Add("freelancer-oauth-v1", accessToken);
+
+        var reqCreatorObject = new ReqCreatorClass();
+        reqCreatorObject.RequestInputObject = inputObject;
+        var httpRequest = reqCreatorObject.GetHttpRequest();
+        var response = await _httpClient.SendAsync(httpRequest);
+        if (response.IsSuccessStatusCode)
         {
-            requestCreator.RequestInputObject = input;
-           
+            var resultObject = await response.Content.ReadFromJsonAsync<ResponseWrapper<ResponseClass>>();
+            return resultObject!.Result;
         }
-        requestCreator.RequestInputObject.BidderId = fLApiToken.FLUserID;
-        var request = requestCreator.GetHttpRequest();
-        var result = await _httpClient.SendAsync(request);
-        var response = await result.Content.ReadFromJsonAsync<ResponseWrapper<CreateBidResponse>>();
-        if (response is not null && response?.Status == "success")
+        var errorResult = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        if (errorResult is not null)
         {
-            return response.Result;
+            errorResult.StatusCode = response.StatusCode;
+            throw new FLApiClientException(errorResult);
         }
-        var exceptionMessage = await result.Content.ReadAsStringAsync();
-        throw new FLApiClientException(exceptionMessage);
+        else
+        {
+            throw new FLApiClientException(await response.Content.ReadAsStringAsync());
+        }
+
     }
 
 

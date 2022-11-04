@@ -13,6 +13,6 @@ public interface IFreelancerClient
     Task<IEnumerable<ProjectResponse>> FetchProjects(string accessToken, ActiveProjectsInput? input=null);
     Task<SelfInformationResponse> GetUser(string accessToken);
     Task<IReadOnlyList<JobResponse>> GetJobs(string accessToken, JobsInput? input = null);
-    Task<CreateBidResponse> CreateBid(FLApiToken fLApiToken, CreateBidInput? input = null);
+    Task<CreateBidResponse> CreateBid(FLApiToken fLApiToken, CreateBidInput input);
 
 }

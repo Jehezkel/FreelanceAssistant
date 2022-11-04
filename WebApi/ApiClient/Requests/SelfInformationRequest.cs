@@ -1,6 +1,4 @@
-﻿using WebApi.ApiClient.Requests;
-
-namespace WebApi.ApiClient
+﻿namespace WebApi.ApiClient.Requests
 {
     public class SelfInformationRequest : BaseRequest
     {

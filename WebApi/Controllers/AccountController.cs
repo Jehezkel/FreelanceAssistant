@@ -16,10 +16,12 @@ public class AccountController : ControllerBase
     private readonly ILogger<AccountController> _logger;
     private readonly SignInManager<AppUser> _signInManager;
     private readonly UserManager<AppUser> _userManager;
-    private readonly TokenService _tokenService;
+    private readonly ITokenService _tokenService;
     private readonly MailService _mailService;
 
-    public AccountController(FLDbContext context, ILogger<AccountController> logger, SignInManager<AppUser> signInManager, UserManager<AppUser> userManager, TokenService tokenService, MailService mailService)
+    public AccountController(FLDbContext context, ILogger<AccountController> logger, SignInManager<AppUser> signInManager, 
+        UserManager<AppUser> userManager, 
+        ITokenService tokenService, MailService mailService)
     {
         _context = context;
         _logger = logger;
@@ -47,9 +49,9 @@ public class AccountController : ControllerBase
         var result = await _userManager.CreateAsync(user, request.Password);
         if (result == IdentityResult.Success)
         {
-            var activationToken = await GenerateTempToken(user, TokenType.Activation);
-            _logger.LogInformation("Sending activation email to {0} with code {1}", user.Email, activationToken.TokenValue);
-            _ = _mailService.SendActivationMail(user, activationToken.TokenValue);
+            var activationToken = await _tokenService.CreateActivationTokenAsync(user.Id);
+            _logger.LogInformation("Sending activation email to {0} with code {1}", user.Email, activationToken);
+            _ = _mailService.SendActivationMail(user, activationToken);
             return Ok();
 
         }
@@ -68,11 +70,11 @@ public class AccountController : ControllerBase
         if (loginResult == SignInResult.Success)
         {
             var userRoles = (await _userManager.GetRolesAsync(user)).ToList();
-            var refreshToken = await GenerateTempToken(user, TokenType.Refresh);
+            var refreshToken = await _tokenService.CreateRefreshTokenAsync(user.Id);
             var result = new LoginResult
             {
                 UserName = user.UserName,
-                RefreshToken = refreshToken.TokenValue,
+                RefreshToken = refreshToken,
                 AccessToken = _tokenService.GenerateAccessToken(user, userRoles),
                 UserRoles = userRoles
             };
@@ -88,7 +90,10 @@ public class AccountController : ControllerBase
     [Route("RefreshToken")]
     public async Task<IActionResult> RefreshToken(string refreshToken)
     {
-        var token = await _context.UserTempTokens.Include(t => t.User).Where(t => t.TokenValue == refreshToken && t.Type == TokenType.Refresh).FirstOrDefaultAsync();
+        var token = await _context.UserTempTokens
+            .Include(t => t.User)
+            .Where(t => t.TokenValue == refreshToken && t.Type == TokenType.Refresh)
+            .FirstOrDefaultAsync();
         if (token is null)
         {
             _logger.LogError($"Refresh token with value {refreshToken} not found!");
@@ -96,10 +101,10 @@ public class AccountController : ControllerBase
         }
         var user = token.User;
         var userRoles = await _userManager.GetRolesAsync(user);
-        var newRefreshToken = await GenerateTempToken(token.User, TokenType.Refresh);
+        var newRefreshTokenValue = await _tokenService.CreateRefreshTokenAsync(token.UserID);
         var refreshResult = new RefreshResult
         {
-            RefreshToken = newRefreshToken.TokenValue,
+            RefreshToken = newRefreshTokenValue,
             AccessToken = _tokenService.GenerateAccessToken(user, userRoles)
         };
 
@@ -109,7 +114,9 @@ public class AccountController : ControllerBase
     [Route("ActivateAccount")]
     public async Task<IActionResult> ActivateAccount([FromQuery] string tokenValue)
     {
-        var userToken = await _context.UserTempTokens.Include(t => t.User).Where(t => t.TokenValue == tokenValue && t.Type == TokenType.Activation).FirstOrDefaultAsync();
+        var userToken = await _context.UserTempTokens.Include(t => t.User)
+            .Where(t => t.TokenValue == tokenValue && t.Type == TokenType.Activation)
+            .FirstOrDefaultAsync();
         if (userToken is null)
         {
             return NotFound("Activation code not found.");
@@ -136,29 +143,6 @@ public class AccountController : ControllerBase
         return Ok();
     }
 
-    private async Task<UserTempToken> GenerateTempToken(AppUser user, TokenType tokenType)
-    {
-        var token = await _context.UserTempTokens.Where(t => t.User == user && t.Type == tokenType).FirstOrDefaultAsync();
-        var tokenVal = tokenType == TokenType.Refresh ? _tokenService.GenerateRefreshToken() : Guid.NewGuid().ToString();
-        if (token is null)
-        {
-            _logger.LogDebug("New token");
-            token = new UserTempToken
-            {
-                User = user,
-                TokenValue = tokenVal,
-                Type = tokenType
-            };
-            _context.UserTempTokens.Add(token);
-        }
-        if (token is not null)
-        {
-            _logger.LogDebug("Updating token value");
-            token.TokenValue = tokenVal;
-        }
-        token!.CreateDate = DateTimeOffset.UtcNow;
-        await _context.SaveChangesAsync();
-        return token!;
-    }
+    
 
 }
