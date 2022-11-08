@@ -41,12 +41,12 @@ public class FreelanceController : ControllerBase
     [Route("VerifyCode")]
     public async Task<IActionResult> VerifyCode(string code)
     {
-        var verResult = await _flClient.VerifyCode(code);
+        var verResult = await _flClient.VerifyCodeAsync(code);
         if (verResult.AccessToken is not null)
         {
             var currentUserID = GetUserId();
             var flApiToken = verResult.ToFLApiToken(currentUserID);
-            var flUser = await _flClient.GetUser(flApiToken.AccessToken);
+            var flUser = await _flClient.GetSelfInformationAsync(flApiToken.AccessToken);
             _logger.LogInformation("Received user info: {0}", flUser);
             flApiToken.FLUserID = flUser.UserId;
             _logger.LogInformation("Saving token: {0}", flApiToken);
@@ -59,24 +59,86 @@ public class FreelanceController : ControllerBase
     [Route("Projects")]
     public async Task<IActionResult> GetProjects()
     {
-        var token = await GetAccessTokenAsync();
-        return Ok(await _flClient.FetchProjects(token!));
+        var accessToken = await GetAccessTokenAsync();
+        if (accessToken is not null)
+        {
+            return Ok(await _flClient.FetchProjectsAsync(accessToken));
+        }
+        return Problem(detail: "Configure integration token first! Token for Freelancer  not found",
+                        title: "Integration not configured");
     }
     [HttpPost]
     [Route("CreateBid")]
-    public async Task<IActionResult> CreateBid([FromQuery] int ProjectId, [FromBody] CreateBidInput body)
+    public async Task<IActionResult> CreateBid([FromQuery] int projectId, [FromBody] CreateBidInput body)
     {
         var token = await GetFlApiTokenForCurrentUser();
-        body.BidderId = token.FLUserID;
         if (token is not null)
         {
-            await _flClient.CreateBid(token.AccessToken, body);
+            body.BidderId = token.FLUserID;
+            await _flClient.CreateBidAsync(token.AccessToken, body);
             return Ok();
         }
-        return Problem(detail: "Configure integration token first! Token for Freelancer  not found", 
+        return Problem(detail: "Configure integration token first! Token for Freelancer  not found",
                         title: "Integration not configured");
     }
-    private async Task<FLApiToken> GetFlApiTokenForCurrentUser()
+
+    [HttpGet]
+    [Route("GetBids")]
+    public async Task<IActionResult> GetBids()
+    {
+        var accessToken = await GetAccessTokenAsync();
+        if (accessToken is not null)
+        {
+            await _flClient.GetBidsAsync(accessToken);
+            return Ok();
+        }
+        return Problem(detail: "Configure integration token first! Token for Freelancer  not found",
+                        title: "Integration not configured");
+    }
+
+    [HttpPost]
+    [Route("BidAction/{bidId:int}")]
+    public async Task<IActionResult> BidAction([FromRoute]int bidId, [FromBody]BidActionInput body)
+    {
+        body.BidId = bidId; 
+        
+        var accessToken = await GetAccessTokenAsync();
+        if (accessToken is not null)
+        {
+            await _flClient.BidAction(accessToken, body);
+            return Ok();
+        }
+        return Problem(detail: "Configure integration token first! Token for Freelancer  not found",
+                        title: "Integration not configured");
+    }
+
+    [HttpPost]
+    [Route("AddJobs")]
+    public async Task<IActionResult> AddJobs([FromBody] AddJobsInput body)
+    {
+        var accessToken = await GetAccessTokenAsync();
+        if (accessToken is not null)
+        {
+            await _flClient.AddJobsAsync(accessToken, body);
+            return Ok();
+        }
+        return Problem(detail: "Configure integration token first! Token for Freelancer  not found",
+                        title: "Integration not configured");
+    }
+    [HttpGet]
+    [Route("GetJobs")]
+    public async Task<IActionResult> GetJobs([FromQuery]JobsInput jobsInput)
+    {
+        var accessToken = await GetAccessTokenAsync();
+        if (accessToken is not null)
+        {
+            await _flClient.GetJobsAsync(accessToken, jobsInput);
+            return Ok();
+        }
+        return Problem(detail: "Configure integration token first! Token for Freelancer  not found",
+                        title: "Integration not configured");
+    }
+    private async Task<FLApiToken?> GetFlApiTokenForCurrentUser()
     {
         var currentUserID = GetUserId();
         var accessTokenValue = await _fLApiTokenRepository.GetFLApiToken(currentUserID);

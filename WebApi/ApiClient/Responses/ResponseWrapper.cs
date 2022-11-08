@@ -9,4 +9,9 @@ namespace WebApi.ApiClient.Responses
         [JsonPropertyName("result")]
         public T Result { get; init; } = default!;
     }
+    public class GenericResponse
+    {
+        [JsonPropertyName("status")]
+        public string Status { get; init; } = null!;
+    }
 }

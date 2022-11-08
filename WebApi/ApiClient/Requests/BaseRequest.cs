@@ -6,6 +6,7 @@ using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.WebUtilities;
+using WebApi.ApiClient.RequestInputs;
 using WebApi.ApiClient.RequestParams;
 
 namespace WebApi.ApiClient.Requests;
@@ -24,9 +25,9 @@ public abstract class BaseRequest
         };
         return request;
     }
- }
+}
 
-public abstract class BaseRequest<T>  : BaseRequest where T : new ()
+public abstract class BaseRequest<T> : BaseRequest where T : new()
 {
     public BaseRequest(T requestInputObject)
     {
@@ -49,7 +50,7 @@ public abstract class BaseRequest<T>  : BaseRequest where T : new ()
         if (this.RequestInputObject is not null && ReqBodyMethods.Contains(this.Method))
         {
             var formUrlDictionary = getAttributesAsDictionary<UseInUrlEncodedBody>();
-            if (formUrlDictionary.Count >0)
+            if (formUrlDictionary.Count > 0)
             {
                 request.Content = new FormUrlEncodedContent(formUrlDictionary);
             }
@@ -63,39 +64,63 @@ public abstract class BaseRequest<T>  : BaseRequest where T : new ()
     }
     public Uri GetEndpointAndQueryParams()
     {
-        var resultAsString = new Uri(this.EndpointUrl, UriKind.Relative).ToString();
+        var resultAsString = this.EndpointUrl;
+        if(RequestInputObject is IHasRouteEndpointAddition)
+        {
+            resultAsString += ((IHasRouteEndpointAddition)RequestInputObject).GetEndpointAddition();
+        }
         var queryParametersDictionary = getAttributesAsDictionary<UseInRequestParameters>();
-        if (queryParametersDictionary is not null)
+        if (queryParametersDictionary is not null && queryParametersDictionary.Count>0)
             resultAsString = QueryHelpers.AddQueryString(resultAsString, queryParametersDictionary);
         return new Uri(resultAsString, UriKind.Relative);
     }
     private Dictionary<string, string?> getAttributesAsDictionary<attribType>() where attribType : NamedAttribute
     {
-        var test = RequestInputObject!.GetType().GetProperties()
-            .Where(p => Attribute.GetCustomAttribute(p, typeof(attribType)) is not null).FirstOrDefault();
-        return RequestInputObject!.GetType().GetProperties()
-            .Where(p => Attribute.GetCustomAttribute(p, typeof(attribType)) is not null)
-            .Select(p => new { Name = GetNameValueFromAttribute<attribType>(p), Value = p.GetValue(RequestInputObject) })
-            .Where(p => p.Value is not null)
-            .ToDictionary(p => p.Name, p => GetParamAsString(p.Value!));
-    }
-    private string? GetParamAsString(object paramValue)
-    {
-        if (paramValue is IEnumerable && paramValue is ICollection)
+        Dictionary<string, string?> result = new();
+        var listOfPropsWithAttribType = GetAllPropertiesWithAttribute<attribType>();
+        foreach (var prop in listOfPropsWithAttribType)
         {
-            var paramValAsList = paramValue as IEnumerable;
-            var midList = new List<string>();
-            foreach (var val in paramValAsList)
-            {
-                var currVal = Convert.ToString(val);
-                midList.Add(currVal);
-            }
-            return (string?)String.Join(", ", midList); ;
+            var name = prop.GetCustomAttribute<attribType>()!.Name ?? prop.Name;
+            var value = GetParamAsString(prop);
+            result[name] = value;
         }
-        return (string?)Convert.ToString(paramValue);
+        return result;
     }
-    private string GetNameValueFromAttribute<attribType>(PropertyInfo prop) where attribType : NamedAttribute
+    private string? GetParamAsString(PropertyInfo propertyInfo)
     {
-        return prop.GetCustomAttribute<attribType>()?.Name ?? prop.Name;
+        var customFormat = propertyInfo.GetCustomAttribute<FormatValue>();
+        var stringFormat = customFormat?.FormatPattern ?? "{0}";
+        var propertyValue = propertyInfo.GetValue(RequestInputObject);
+        if (propertyValue is null)
+        {
+            return null;
+        }
+        if (propertyValue is IEnumerable && propertyValue is ICollection)
+        {
+            var separator = customFormat?.Separator ?? ", ";
+            var paramValAsList = propertyValue as IEnumerable;
+            var resultList = new List<string>();
+            foreach (var val in paramValAsList!)
+            {
+                var formattedValue = String.Format(stringFormat, val);
+                resultList.Add(formattedValue);
+            }
+            return (string?)String.Join(separator, resultList); ;
+        }
+        else
+        {
+            return (string?)String.Format(stringFormat, propertyValue);
+        }
     }
+
+    private List<PropertyInfo> GetAllPropertiesWithAttribute<AttribType>()
+    {
+        return RequestInputObject!.GetType().GetProperties()
+            .Where(p => Attribute.GetCustomAttribute(p, typeof(AttribType)) is not null).ToList();
+    }
+
+    //private string? GetSeparator(PropertyInfo prop)
+    //{
+    //    return prop.GetCustomAttribute<FormatValue>()?.FormatPattern;
+    //}
 }
