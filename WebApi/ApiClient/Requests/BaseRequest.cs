@@ -29,7 +29,7 @@ public abstract class BaseRequest
 
 public abstract class BaseRequest<T> : BaseRequest where T : new()
 {
-    public BaseRequest(T requestInputObject)
+    public BaseRequest(T? requestInputObject)
     {
         RequestInputObject = requestInputObject;
     }
@@ -65,6 +65,10 @@ public abstract class BaseRequest<T> : BaseRequest where T : new()
     public Uri GetEndpointAndQueryParams()
     {
         var resultAsString = this.EndpointUrl;
+        if(RequestInputObject is null)
+        {
+            return new Uri(resultAsString, UriKind.Relative);
+        }
         if(RequestInputObject is IHasRouteEndpointAddition)
         {
             resultAsString += ((IHasRouteEndpointAddition)RequestInputObject).GetEndpointAddition();

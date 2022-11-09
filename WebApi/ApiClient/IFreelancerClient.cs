@@ -8,7 +8,7 @@ namespace WebApi.ApiClient
     {
         Task<GenericResponse> AddJobsAsync(string access_token, AddJobsInput input);
         Task<CreateBidResponse> CreateBidAsync(string access_token, CreateBidInput input);
-        Task<List<ProjectResponse>> FetchProjectsAsync(string access_token, ActiveProjectsInput? input = null);
+        Task<ActiveProjectsResponse> FetchProjectsAsync(string access_token, ActiveProjectsInput? input = null);
         string getAuthorizationUrl();
         Task<List<BidResponse>> GetBidsAsync(string access_token);
         Task<GenericResponse> BidAction(string access_token, BidActionInput input);

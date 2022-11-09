@@ -75,8 +75,7 @@ public class FreelanceController : ControllerBase
         if (token is not null)
         {
             body.BidderId = token.FLUserID;
-            await _flClient.CreateBidAsync(token.AccessToken, body);
-            return Ok();
+            return Ok(await _flClient.CreateBidAsync(token.AccessToken, body));
         }
         return Problem(detail: "Configure integration token first! Token for Freelancer  not found",
                         title: "Integration not configured");

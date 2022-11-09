@@ -39,8 +39,35 @@ public class FreelancerClient : IFreelancerClient
     /// </summary>
     /// <param name="code"></param>
     /// <returns></returns>
-    public async Task<VerifyCodeResponse> VerifyCodeAsync(string code) =>
-        await ExecuteRequest<VerifyCodeResponse, VerifyCodeRequest, VerifyCodeInput>(new VerifyCodeInput(_freelancerConfig, code));
+    public async Task<VerifyCodeResponse> VerifyCodeAsync(string code)
+    {
+        var baseAuthUrl = new Uri(_freelancerConfig.AuthEndpoint);
+        var verifyCodeInput = new VerifyCodeInput(_freelancerConfig, code);
+        var reqCreator = new VerifyCodeRequest();
+        reqCreator.RequestInputObject = verifyCodeInput;
+        var httpRequest = reqCreator.GetHttpRequest();
+        var relativReqUri = httpRequest.RequestUri!.ToString();
+        httpRequest.RequestUri = new Uri(baseAuthUrl, relativReqUri);
+        var response = await _httpClient.SendAsync(httpRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            var resultObject = await response.Content.ReadFromJsonAsync<VerifyCodeResponse>();
+            return resultObject;
+        }
+        var errorResult = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+        if (errorResult is not null)
+        {
+            errorResult.StatusCode = response.StatusCode;
+            throw new FLApiClientException(errorResult);
+        }
+        else
+        {
+            throw new FLApiClientException(await response.Content.ReadAsStringAsync());
+        }
+
+    }
+        //this must go to different baseurl - change usage from generic to specific function
+        //await ExecuteRequest<VerifyCodeResponse, VerifyCodeRequest, VerifyCodeInput>(new VerifyCodeInput(_freelancerConfig, code));
 
 
     /// <summary>
@@ -50,8 +77,8 @@ public class FreelancerClient : IFreelancerClient
     /// <param name="input">possible filtering options</param>
     /// <returns>List of projects</returns>
     /// <exception cref="FLApiClientException"></exception>
-    public async Task<List<ProjectResponse>> FetchProjectsAsync(string access_token, ActiveProjectsInput? input = null) =>
-         await ExecuteRequest<List<ProjectResponse>, ActiveProjectsRequest, ActiveProjectsInput>(input, access_token);
+    public async Task<ActiveProjectsResponse> FetchProjectsAsync(string access_token, ActiveProjectsInput? input = null) =>
+         await ExecuteRequest<ActiveProjectsResponse, ActiveProjectsRequest, ActiveProjectsInput>(input, access_token);
 
 
     /// <summary>

@@ -12,7 +12,7 @@ public class AuthorizeInput
         this.ClientId = freelancerConfig.ClientID;
         this.RedirectUri = freelancerConfig.RedirectUri;
         this.Scope = "basic";
-        this.AdvancedScopes = "2 5 6" ;
+        this.AdvancedScopes = new List<int> { 2, 6 };
     }
     [UseInRequestParameters("response_type")]
     public string ResponseType { get; set; } = null!;
@@ -23,5 +23,6 @@ public class AuthorizeInput
     [UseInRequestParameters("scope")]
     public string Scope { get; set; } = null!;
     [UseInRequestParameters("advanced_scopes")]
-    public string AdvancedScopes { get; set; } = null!;
+    [FormatValue("{0}", " ")]
+    public List<int> AdvancedScopes { get; set; } = null!;
 }
