@@ -6,6 +6,7 @@ using WebApi.Mapping;
 using WebApi.Repositories;
 using WebApi.ApiClient.RequestInputs;
 using WebApi.Models;
+using WebApi.Services;
 
 namespace WebApi.Controllers;
 [ApiController]
@@ -14,14 +15,14 @@ namespace WebApi.Controllers;
 public class FreelanceController : ControllerBase
 {
     private readonly ILogger<FreelanceController> _logger;
-    private readonly IHttpContextAccessor _contextAccessor;
+    private readonly ICurrentUserService _userService;
     private readonly IFreelancerClient _flClient;
     private readonly IFLApiTokenRepository _fLApiTokenRepository;
 
-    public FreelanceController(ILogger<FreelanceController> logger, IHttpContextAccessor contextAccessor, IFreelancerClient flClient, IFLApiTokenRepository fLApiTokenRepository)
+    public FreelanceController(ILogger<FreelanceController> logger, ICurrentUserService userService, IFreelancerClient flClient, IFLApiTokenRepository fLApiTokenRepository)
     {
         _logger = logger;
-        _contextAccessor = contextAccessor;
+        _userService = userService;
         _flClient = flClient;
         _fLApiTokenRepository = fLApiTokenRepository;
     }
@@ -44,7 +45,7 @@ public class FreelanceController : ControllerBase
         var verResult = await _flClient.VerifyCodeAsync(code);
         if (verResult.AccessToken is not null)
         {
-            var currentUserID = GetUserId();
+            var currentUserID = _userService.UserId!;
             var flApiToken = verResult.ToFLApiToken(currentUserID);
             var flUser = await _flClient.GetSelfInformationAsync(flApiToken.AccessToken);
             _logger.LogInformation("Received user info: {0}", flUser);
@@ -139,19 +140,16 @@ public class FreelanceController : ControllerBase
     }
     private async Task<FLApiToken?> GetFlApiTokenForCurrentUser()
     {
-        var currentUserID = GetUserId();
+        var currentUserID = _userService.UserId!;
         var accessTokenValue = await _fLApiTokenRepository.GetFLApiToken(currentUserID);
         return accessTokenValue;
     }
     private async Task<string?> GetAccessTokenAsync()
     {
-        var currentUserID = GetUserId();
+        var currentUserID = _userService.UserId!;
         var accessTokenValue = await _fLApiTokenRepository.GetAccessToken(currentUserID);
         return accessTokenValue;
     }
-    private string GetUserId()
-    {
-        return _contextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier);
-    }
+   
 
 }

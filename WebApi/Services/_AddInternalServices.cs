@@ -18,7 +18,7 @@ public static class InternalServicesInstaller
         services.Configure<MailSettings>(config.GetSection("MailSettings"));
         services.AddTransient<MailService>();
         services.AddSingleton<MailTemplateService>();
-
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
         services.AddTransient<RequestLoggingHandler>();
 

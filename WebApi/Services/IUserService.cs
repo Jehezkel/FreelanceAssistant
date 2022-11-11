@@ -3,10 +3,10 @@ using WebApi.Models;
 
 namespace WebApi.Services
 {
-    public interface IUserService
+    public interface ICurrentUserService
     {
-        public Task<int> GetCurrentUserId();
-        public Task<AppUser> GetCurrentUser();
-        public Task<List<string>> GetCurrentUserRoles();
+        public string? UserId { get;}
+        public bool IsAdmin { get; }
+        //public Task<AppUser> GetCurrentUser();
     }
 }

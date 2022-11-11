@@ -29,7 +29,7 @@ public class TokenService : ITokenService
         claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
         claims.Add(new Claim("name", user.UserName));
         claims.Add(new Claim("mail", user.Email));
-        roles.ToList().ForEach(r => claims.Add(new Claim("role", r)));
+        roles.ToList().ForEach(r => claims.Add(new Claim(ClaimTypes.Role, r)));
         var jwt = new JwtSecurityToken(
             issuer: jwtSection["ValidIssuer"],
             audience: jwtSection["ValidAudience"],

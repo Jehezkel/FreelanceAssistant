@@ -18,6 +18,7 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.Seed();
         base.OnModelCreating(builder);
         builder.Entity<UserTempToken>()
         .HasOne(t => t.User)

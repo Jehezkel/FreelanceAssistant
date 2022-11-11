@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebApi.DAL;
@@ -11,9 +12,10 @@ using WebApi.DAL;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(FLDbContext))]
-    partial class FLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221111172458_roles")]
+    partial class roles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,17 +52,10 @@ namespace WebApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ead8885b-4d9a-4bee-8230-c12b8d052ae2",
-                            ConcurrencyStamp = "a6e7b32e-afb7-413a-bbfe-a9cfd796707d",
+                            Id = "46f010aa-a550-4cd1-81f4-2461a8ade2e7",
+                            ConcurrencyStamp = "641f0cd5-a32d-4c63-a53a-cb3d143656a2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = "11ffbcdd-43a0-4f76-abe8-e6b2ec7e9b0d",
-                            ConcurrencyStamp = "95507757-be32-4e0e-ac76-fd55f0f20822",
-                            Name = "User",
-                            NormalizedName = "USER"
                         });
                 });
 
