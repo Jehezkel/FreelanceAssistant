@@ -14,6 +14,8 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
 
     public DbSet<FLApiToken> FLApiTokens => Set<FLApiToken>();
 
+    public DbSet<DescriptionTemplate> DescriptionTemplates =>Set<DescriptionTemplate>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -32,6 +34,12 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
         .HasOne(t => t.User)
         .WithOne(u => u.FLApiToken)
         .HasForeignKey<FLApiToken>(t => t.UserId);
+
+        builder.Entity<DescriptionTemplate>().HasKey(t => t.Id);
+        builder.Entity<DescriptionTemplate>()
+        .HasOne(d => d.User)
+        .WithMany(u => u.DescriptionTemplates)
+        .HasForeignKey(t => t.UserId);
 
     }
 
