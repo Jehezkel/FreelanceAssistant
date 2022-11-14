@@ -12,8 +12,8 @@ using WebApi.DAL;
 namespace WebApi.Migrations
 {
     [DbContext(typeof(FLDbContext))]
-    [Migration("20221013202020_init")]
-    partial class init
+    [Migration("20221111172458_roles")]
+    partial class roles
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -48,6 +48,15 @@ namespace WebApi.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "46f010aa-a550-4cd1-81f4-2461a8ade2e7",
+                            ConcurrencyStamp = "641f0cd5-a32d-4c63-a53a-cb3d143656a2",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -160,7 +169,7 @@ namespace WebApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Webapi.Models.AppUser", b =>
+            modelBuilder.Entity("WebApi.Models.AppUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -224,6 +233,73 @@ namespace WebApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("WebApi.Models.DescriptionTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DescriptionTemplates");
+                });
+
+            modelBuilder.Entity("WebApi.Models.FLApiToken", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AccessToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("ExpireDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("FLUserID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RefreshToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("FLApiTokens");
+                });
+
+            modelBuilder.Entity("WebApi.Models.UserTempToken", b =>
+                {
+                    b.Property<string>("UserID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TokenValue")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserID", "Type");
+
+                    b.ToTable("UserTempTokens");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -235,7 +311,7 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Webapi.Models.AppUser", null)
+                    b.HasOne("WebApi.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -244,7 +320,7 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Webapi.Models.AppUser", null)
+                    b.HasOne("WebApi.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -259,7 +335,7 @@ namespace WebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Webapi.Models.AppUser", null)
+                    b.HasOne("WebApi.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -268,11 +344,53 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Webapi.Models.AppUser", null)
+                    b.HasOne("WebApi.Models.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("WebApi.Models.DescriptionTemplate", b =>
+                {
+                    b.HasOne("WebApi.Models.AppUser", "User")
+                        .WithMany("DescriptionTemplates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApi.Models.FLApiToken", b =>
+                {
+                    b.HasOne("WebApi.Models.AppUser", "User")
+                        .WithOne("FLApiToken")
+                        .HasForeignKey("WebApi.Models.FLApiToken", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApi.Models.UserTempToken", b =>
+                {
+                    b.HasOne("WebApi.Models.AppUser", "User")
+                        .WithMany("UserTempTokens")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApi.Models.AppUser", b =>
+                {
+                    b.Navigation("DescriptionTemplates");
+
+                    b.Navigation("FLApiToken");
+
+                    b.Navigation("UserTempTokens");
                 });
 #pragma warning restore 612, 618
         }

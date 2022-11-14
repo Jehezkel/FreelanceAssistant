@@ -1,1 +1,3 @@
 .vs/
+/WebApiTests/obj
+/WebApiTests/bin/Debug/net6.0

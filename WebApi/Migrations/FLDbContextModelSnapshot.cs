@@ -46,6 +46,22 @@ namespace WebApi.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "ead8885b-4d9a-4bee-8230-c12b8d052ae2",
+                            ConcurrencyStamp = "a6e7b32e-afb7-413a-bbfe-a9cfd796707d",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "11ffbcdd-43a0-4f76-abe8-e6b2ec7e9b0d",
+                            ConcurrencyStamp = "95507757-be32-4e0e-ac76-fd55f0f20822",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -222,9 +238,32 @@ namespace WebApi.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("WebApi.Models.DescriptionTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DescriptionTemplates");
+                });
+
             modelBuilder.Entity("WebApi.Models.FLApiToken", b =>
                 {
-                    b.Property<string>("UserID")
+                    b.Property<string>("UserId")
                         .HasColumnType("text");
 
                     b.Property<string>("AccessToken")
@@ -234,17 +273,14 @@ namespace WebApi.Migrations
                     b.Property<DateTimeOffset>("ExpireDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("FLUserID")
+                        .HasColumnType("integer");
+
                     b.Property<string>("RefreshToken")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("UserID");
-
-                    b.HasIndex("UserId");
+                    b.HasKey("UserId");
 
                     b.ToTable("FLApiTokens");
                 });
@@ -320,11 +356,22 @@ namespace WebApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("WebApi.Models.DescriptionTemplate", b =>
+                {
+                    b.HasOne("WebApi.Models.AppUser", "User")
+                        .WithMany("DescriptionTemplates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WebApi.Models.FLApiToken", b =>
                 {
                     b.HasOne("WebApi.Models.AppUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("FLApiToken")
+                        .HasForeignKey("WebApi.Models.FLApiToken", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -344,6 +391,10 @@ namespace WebApi.Migrations
 
             modelBuilder.Entity("WebApi.Models.AppUser", b =>
                 {
+                    b.Navigation("DescriptionTemplates");
+
+                    b.Navigation("FLApiToken");
+
                     b.Navigation("UserTempTokens");
                 });
 #pragma warning restore 612, 618

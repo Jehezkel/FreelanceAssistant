@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 
 namespace WebApi.ApiClient.Responses;
-public record AccessTokenResponse
+public record VerifyCodeResponse
 {
     [JsonPropertyName("scope")]
     public string Scope { get; init; } = null!;

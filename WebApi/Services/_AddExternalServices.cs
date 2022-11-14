@@ -12,7 +12,7 @@ namespace WebApi.Services;
 
 public static class ExternalServicesInstaller
 {
-    public static void InstallExternalServices(this IServiceCollection services, IConfiguration config)
+    public static void AddExternalServices(this IServiceCollection services, IConfiguration config)
     {
         services.AddDbContext<IFLDbContext, FLDbContext>(opt => opt.UseNpgsql(config.GetConnectionString("FLDbContext")));
 

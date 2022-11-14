@@ -12,11 +12,13 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
     }
     public DbSet<UserTempToken> UserTempTokens => Set<UserTempToken>();
 
-    public DbSet<FLApiToken> FLApiTokens => throw new NotImplementedException();
+    public DbSet<FLApiToken> FLApiTokens => Set<FLApiToken>();
 
-    // public DbSet<FLApiToken> FLApiTokens => Set<FLApiToken>();
+    public DbSet<DescriptionTemplate> DescriptionTemplates =>Set<DescriptionTemplate>();
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        builder.Seed();
         base.OnModelCreating(builder);
         builder.Entity<UserTempToken>()
         .HasOne(t => t.User)
@@ -28,11 +30,20 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
         builder.Entity<UserTempToken>()
         .Property(t => t.Type).HasConversion(v => v.ToString(), v => (TokenType)Enum.Parse(typeof(TokenType), v));
 
+        builder.Entity<FLApiToken>().HasKey(t => t.UserId);
         builder.Entity<FLApiToken>()
-        .HasOne(t => t.User);
-        builder.Entity<FLApiToken>().HasKey(t => t.UserID);
+        .HasOne(t => t.User)
+        .WithOne(u => u.FLApiToken)
+        .HasForeignKey<FLApiToken>(t => t.UserId);
+
+        builder.Entity<DescriptionTemplate>().HasKey(t => t.Id);
+        builder.Entity<DescriptionTemplate>()
+        .HasOne(d => d.User)
+        .WithMany(u => u.DescriptionTemplates)
+        .HasForeignKey(t => t.UserId);
+
     }
 
-   
+
 
 }
