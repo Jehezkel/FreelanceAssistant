@@ -1,0 +1,5 @@
+<p *ngIf="isLoading">Loading</p>
+<p *ngIf="!isLoading">Loaded</p>
+<div *ngIf="data.authUrl">
+  <a [href]="data.authUrl">Configure Integration</a>
+</div>

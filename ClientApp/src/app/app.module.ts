@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { MomentModule } from 'ngx-moment';
@@ -14,6 +14,10 @@ import { HomeComponent } from './home/home.component';
 import { AuthGuard } from './helpers/auth.guard';
 import { environment } from 'src/environments/environment';
 import { MessagesComponent } from './messages/messages.component';
+import { ProjectsComponent } from './projects/projects.component';
+import { CheckIntegrationComponent } from './home/check-integration/check-integration.component';
+import { JwtInterceptor } from './helpers/jwt.interceptor';
+import { VerifyCodeComponent } from './home/verify-code/verify-code.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +27,9 @@ import { MessagesComponent } from './messages/messages.component';
     RegisterComponent,
     MessagesComponent,
     ActivateComponent,
+    ProjectsComponent,
+    CheckIntegrationComponent,
+    VerifyCodeComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,6 +40,7 @@ import { MessagesComponent } from './messages/messages.component';
   ],
   providers: [
     AuthGuard,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     // { provide: 'API_BASE_URL', use: environment.API_BASE_PATH }
   ],
   bootstrap: [AppComponent],

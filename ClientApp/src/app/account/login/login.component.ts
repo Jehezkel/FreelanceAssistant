@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.userService.isLoggedInValue()) {
+    if (this.userService.isLoggedIn) {
       this.router.navigateByUrl('/');
     }
   }

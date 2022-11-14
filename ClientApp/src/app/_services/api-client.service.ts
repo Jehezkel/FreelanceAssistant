@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { GetProjectsInput } from '../_models/get-projects-input.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,5 +30,18 @@ export class ApiClientService {
     const uri = this.API_BASE_URL + 'Account/ActivateAccount';
     const params = new HttpParams().set('tokenValue', tokenValue);
     return this.httpClient.get(uri, { params: params });
+  }
+
+  fl_GetIntegrationStatus() {
+    const uri = this.API_BASE_URL + 'Freelance';
+    return this.httpClient.get(uri);
+  }
+  fl_VerifyCode(code: string) {
+    const uri = this.API_BASE_URL + 'Freelance/VerifyCode';
+    const params = new HttpParams().set('code', code);
+    return this.httpClient.get(uri, { params: params });
+  }
+  fl_GetProjects(input: GetProjectsInput) {
+    const uri = this.API_BASE_URL + 'Freelance/Projects';
   }
 }

@@ -37,8 +37,11 @@ export class UserService {
   logout() {
     this.User$.next(new User());
   }
-  isLoggedInValue() {
+  get isLoggedIn(): boolean {
     return this.User$.value.accessToken ? true : false;
+  }
+  get accessToken(): string | undefined {
+    return this.User$.value.accessToken;
   }
   saveUser() {
     window.sessionStorage.setItem('USER', JSON.stringify(this.User$.value));

@@ -44,10 +44,16 @@ public class FreelanceControllerTests
         //Act
         var result = await _sut.GetServiceConfigState();
 
-        var okObjectResult = okObjectResult(result.Result);
+        var okObjectResult = (OkObjectResult)result;
         //Assert
         // Assert.Equal(new { authUrl = _flClient.getAuthorizationUrl() }, result.AS);
-        From.TaskResult(result).Should().BeNull();
+        okObjectResult.Value.Should().BeEquivalentTo(new { authUrl = _flClient.getAuthorizationUrl() });
+        okObjectResult.StatusCode.Should().Be(200);
+    }
+
+    private void Ok()
+    {
+        throw new NotImplementedException();
     }
 
     private ClaimsPrincipal GetClaimsWithId(string UserId)
