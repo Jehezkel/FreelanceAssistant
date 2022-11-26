@@ -1,7 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { GetProjectsInput } from '../_models/get-projects-input.model';
+import { User } from '../_models/user.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,13 +11,13 @@ import { GetProjectsInput } from '../_models/get-projects-input.model';
 export class ApiClientService {
   API_BASE_URL: string = environment.API_BASE_PATH;
   constructor(private httpClient: HttpClient) {}
-  login(email: string, password: string) {
+  login(email: string, password: string): Observable<User> {
     const uri = this.API_BASE_URL + 'Account/Login';
     const reqBody = {
       email: email,
       password: password,
     };
-    return this.httpClient.post(uri, reqBody);
+    return this.httpClient.post<User>(uri, reqBody);
   }
   register(userName: string, email: string, password: string) {
     const uri = this.API_BASE_URL + 'Account/Register';

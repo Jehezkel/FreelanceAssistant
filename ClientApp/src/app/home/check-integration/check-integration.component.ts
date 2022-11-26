@@ -11,7 +11,8 @@ import { HttpRequestState } from 'src/app/helpers/HttpRequestState';
 })
 export class CheckIntegrationComponent implements OnInit {
   isLoading: boolean = false;
-  data: any;
+  authUrl: string = '';
+  isConfigured: boolean = false;
   // readonly integrationState$:Observable<HttpRequestState<>>
   constructor(private apiClient: ApiClientService) {}
 
@@ -22,6 +23,11 @@ export class CheckIntegrationComponent implements OnInit {
         startWith((this.isLoading = true)),
         finalize(() => (this.isLoading = false))
       )
-      .subscribe((data) => (this.data = data));
+      .subscribe((data: any) => {
+        if (data != null && !data.authUrl) {
+          this.isConfigured = true;
+          this.authUrl = data.authUrl ?? '';
+        }
+      });
   }
 }

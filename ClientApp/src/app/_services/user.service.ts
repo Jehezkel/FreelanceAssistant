@@ -1,32 +1,25 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, tap } from 'rxjs';
+import { User } from '../_models/user.model';
 import { ApiClientService } from './api-client.service';
 
-class User {
-  userName?: string;
-  accessToken?: string;
-  refreshToken?: string;
-  expireDate?: string;
-  userRoles?: string[] = [];
-}
-// "accessToken": "string",
-// "refreshToken": "string",
-// "expireDate": "2022-10-17T17:23:58.578Z",
-// "userName": "string",
-// "userRoles": [
-//   "string"
-// ]
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  User$: BehaviorSubject<User> = new BehaviorSubject<User>({});
-
+  User$: BehaviorSubject<User> = new BehaviorSubject<User>({} as User);
+  isLoggedIn$: Observable<boolean>;
   constructor(private apiService: ApiClientService) {
     console.log('created user service');
     this.retriveUser();
+    this.isLoggedIn$ = this.User$.pipe(
+      map((user: User) => (this.accessToken ? true : false))
+    );
   }
   login(email: string, pass: string) {
+    // return this.apiService.login(email,pass).pipe(
+    //   tap((data : User))
+    //   )
     return this.apiService.login(email, pass).pipe(
       tap((data: User) => {
         this.User$.next(data);
@@ -35,11 +28,15 @@ export class UserService {
     );
   }
   logout() {
-    this.User$.next(new User());
+    this.User$.next({} as User);
+    this.removeUser();
   }
   get isLoggedIn(): boolean {
     return this.User$.value.accessToken ? true : false;
   }
+  // get isLoggedIn$(): Observable<boolean> {
+  //   return of(this.isLoggedIn);
+  // }
   get accessToken(): string | undefined {
     return this.User$.value.accessToken;
   }

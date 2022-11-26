@@ -18,6 +18,8 @@ import { ProjectsComponent } from './projects/projects.component';
 import { CheckIntegrationComponent } from './home/check-integration/check-integration.component';
 import { JwtInterceptor } from './helpers/jwt.interceptor';
 import { VerifyCodeComponent } from './home/verify-code/verify-code.component';
+import { UserComponent } from './navbar/user/user.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { VerifyCodeComponent } from './home/verify-code/verify-code.component';
     ProjectsComponent,
     CheckIntegrationComponent,
     VerifyCodeComponent,
+    UserComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,
