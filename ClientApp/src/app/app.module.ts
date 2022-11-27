@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -26,6 +27,7 @@ import { BidsComponent } from './bids/bids.component';
 @NgModule({
   declarations: [
     AppComponent,
+
     LoginComponent,
     HomeComponent,
     RegisterComponent,
