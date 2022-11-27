@@ -7,11 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 export class MessagesService {
   private idx = 0;
   Messages$: BehaviorSubject<Message[]> = new BehaviorSubject<Message[]>([]);
-  constructor() {
-    // this.addMessage(new Message(MessageLevel.Info, 'Test info', 100));
-    // this.addMessage(new Message(MessageLevel.Error, 'Test error', 10));
-    // this.addMessage(new Message(MessageLevel.Success, 'Test success', 10));
-  }
+  constructor() {}
   addMessage(msg: Message) {
     msg.id = this.idx++;
     this.Messages$.next([...this.Messages$.value, msg]);
@@ -24,7 +20,7 @@ export class MessagesService {
     this.addMessage(new Message(MessageLevel.Error, msg, visibleSeconds ?? 10));
   }
   addSuccess(msg: string) {
-    this.addMessage(new Message(MessageLevel.Success, msg, 10));
+    this.addMessage(new Message(MessageLevel.Success, msg, 4));
   }
 }
 

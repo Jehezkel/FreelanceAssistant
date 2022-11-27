@@ -1,5 +1,16 @@
-<p *ngIf="isLoading">Loading</p>
-<p *ngIf="!isLoading">Loaded</p>
-<div *ngIf="!isConfigured">
-  <a [href]="authUrl">Configure Integration</a>
+<p *ngIf="isLoading">Loading ...</p>
+<div *ngIf="!isLoading" class="max-w-md">
+  <p>Integration with Freelance status:</p>
+  <div *ngIf="isConfigured">
+    <p class="text-green-600">Configured</p>
+    <p>You can start defining responses & searches to be observed.</p>
+  </div>
+  <div *ngIf="!isConfigured">
+    <p class="text-red-600">Not Configured</p>
+    <p>Please configure integration first.</p>
+    <br />
+    <a class="bg-sky-600 rounded-md p-2 px-2 text-white" [href]="authUrl"
+      >Configure Integration</a
+    >
+  </div>
 </div>

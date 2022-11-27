@@ -6,6 +6,7 @@ import { LoginComponent } from './account/login/login.component';
 import { RegisterComponent } from './account/register/register.component';
 import { ActivateComponent } from './account/activate/activate.component';
 import { VerifyCodeComponent } from './home/verify-code/verify-code.component';
+import { TemplatesComponent } from './templates/templates.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -14,6 +15,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'activate', component: ActivateComponent },
   { path: 'VerifyCode', component: VerifyCodeComponent },
+  { path: 'templates', component: TemplatesComponent },
 ];
 
 @NgModule({

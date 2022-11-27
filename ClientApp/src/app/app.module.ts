@@ -18,8 +18,10 @@ import { ProjectsComponent } from './projects/projects.component';
 import { CheckIntegrationComponent } from './home/check-integration/check-integration.component';
 import { JwtInterceptor } from './helpers/jwt.interceptor';
 import { VerifyCodeComponent } from './home/verify-code/verify-code.component';
-import { UserComponent } from './navbar/user/user.component';
+import { UserButtonComponent } from './navbar/user-button/user-button.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { TemplatesComponent } from './templates/templates.component';
+import { BidsComponent } from './bids/bids.component';
 
 @NgModule({
   declarations: [
@@ -32,8 +34,10 @@ import { NavbarComponent } from './navbar/navbar.component';
     ProjectsComponent,
     CheckIntegrationComponent,
     VerifyCodeComponent,
-    UserComponent,
+    UserButtonComponent,
     NavbarComponent,
+    TemplatesComponent,
+    BidsComponent,
   ],
   imports: [
     BrowserModule,

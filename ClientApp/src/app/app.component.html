@@ -1,2 +1,10 @@
 <app-messages></app-messages>
-<router-outlet></router-outlet>
+<div *ngIf="!(isLoggedIn$ | async)">
+  <router-outlet></router-outlet>
+</div>
+<div  *ngIf="isLoggedIn$ | async">
+  <app-navbar></app-navbar>
+  <div class="mt-4 flex flex-col justify-center max-w-6xl items-center mx-auto">
+    <router-outlet></router-outlet>
+  </div>
+</div>

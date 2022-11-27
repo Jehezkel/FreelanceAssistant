@@ -1,0 +1,22 @@
+<div class="w-10 h-full flex items-center">
+  <button
+    class="my-auto flex items-center"
+    (click)="isMenuVisible = !isMenuVisible"
+  >
+    <span class="material-symbols-outlined"> account_circle </span>
+  </button>
+</div>
+<!-- translate x 15rem(self width ) - 2.5 rem( of icon width) -->
+<div
+  class="absolute py-2 w-60 border flex -translate-x-[12.5rem] rounded-lg bg-white border-slate-100 shadow-lg"
+  *ngIf="isMenuVisible"
+>
+  <ul class="select-none w-full">
+    <li class="hover:bg-slate-200 px-4">
+      <a>Settings</a>
+    </li>
+    <li class="hover:bg-slate-200 px-4">
+      <a class="w-full block" (click)="logOut()">Log out</a>
+    </li>
+  </ul>
+</div>

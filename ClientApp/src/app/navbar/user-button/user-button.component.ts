@@ -4,11 +4,12 @@ import { UserService } from '@services/user.service';
 import { User } from 'src/app/_models/user.model';
 
 @Component({
-  selector: 'app-user',
-  templateUrl: './user.component.html',
-  styleUrls: ['./user.component.css'],
+  selector: 'app-user-button',
+  templateUrl: './user-button.component.html',
+  styleUrls: ['./user-button.component.css'],
 })
-export class UserComponent implements OnInit {
+export class UserButtonComponent implements OnInit {
+  isMenuVisible: boolean = false;
   constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit(): void {}
