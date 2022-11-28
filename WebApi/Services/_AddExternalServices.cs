@@ -72,6 +72,7 @@ public static class ExternalServicesInstaller
         {
             policy.WithOrigins(allowedOrigins);
             policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
         }));
     }
     public static void UseExternalServices(this WebApplication app, IConfiguration config)

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { GetProjectsInput } from '../_models/get-projects-input.model';
+import { Template } from '../_models/template.model';
 import { User } from '../_models/user.model';
 
 @Injectable({
@@ -45,5 +46,24 @@ export class ApiClientService {
   }
   fl_GetProjects(input: GetProjectsInput) {
     const uri = this.API_BASE_URL + 'Freelance/Projects';
+  }
+  getTemplates() {
+    const uri = this.API_BASE_URL + 'DescriptionTemplate';
+    return this.httpClient.get<Template[]>(uri);
+  }
+  addTemplate(desc: string) {
+    const uri = this.API_BASE_URL + 'DescriptionTemplate';
+    const reqBody = {
+      description: desc,
+    };
+    return this.httpClient.post<Template>(uri, reqBody);
+  }
+  removeTemplate(id: number) {
+    const uri = this.API_BASE_URL + `DescriptionTemplate/${id}`;
+    return this.httpClient.delete(uri);
+  }
+  updateTemplate(template: Template) {
+    const uri = this.API_BASE_URL + 'DescriptionTemplate';
+    return this.httpClient.put<Template>(uri, template);
   }
 }

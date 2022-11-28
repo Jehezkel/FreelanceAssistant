@@ -23,6 +23,7 @@ import { UserButtonComponent } from './navbar/user-button/user-button.component'
 import { NavbarComponent } from './navbar/navbar.component';
 import { TemplatesComponent } from './templates/templates.component';
 import { BidsComponent } from './bids/bids.component';
+import { TemplateFormComponent } from './templates/template-form/template-form.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { BidsComponent } from './bids/bids.component';
     NavbarComponent,
     TemplatesComponent,
     BidsComponent,
+    TemplateFormComponent,
   ],
   imports: [
     BrowserModule,

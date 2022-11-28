@@ -12,6 +12,9 @@
   *ngIf="isMenuVisible"
 >
   <ul class="select-none w-full">
+    <li class="px-4 border-b my-2 py-2">
+      <p>User: {{ (user$ | async)?.userName }}</p>
+    </li>
     <li class="hover:bg-slate-200 px-4">
       <a>Settings</a>
     </li>

@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '@services/user.service';
+import { Observable } from 'rxjs';
 import { User } from 'src/app/_models/user.model';
 
 @Component({
@@ -10,7 +11,10 @@ import { User } from 'src/app/_models/user.model';
 })
 export class UserButtonComponent implements OnInit {
   isMenuVisible: boolean = false;
-  constructor(private userService: UserService, private router: Router) {}
+  user$: Observable<User>;
+  constructor(private userService: UserService, private router: Router) {
+    this.user$ = this.userService.User$;
+  }
 
   ngOnInit(): void {}
   logOut() {

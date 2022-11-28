@@ -7,6 +7,8 @@ import { RegisterComponent } from './account/register/register.component';
 import { ActivateComponent } from './account/activate/activate.component';
 import { VerifyCodeComponent } from './home/verify-code/verify-code.component';
 import { TemplatesComponent } from './templates/templates.component';
+import { BidsComponent } from './bids/bids.component';
+import { ProjectsComponent } from './projects/projects.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -16,6 +18,8 @@ const routes: Routes = [
   { path: 'activate', component: ActivateComponent },
   { path: 'VerifyCode', component: VerifyCodeComponent },
   { path: 'templates', component: TemplatesComponent },
+  { path: 'bids', component: BidsComponent },
+  { path: 'projects', component: ProjectsComponent },
 ];
 
 @NgModule({

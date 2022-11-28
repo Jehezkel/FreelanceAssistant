@@ -1,1 +1,50 @@
-<p>templates works!</p>
+<div
+  *ngIf="isToastVisible"
+  class="absolute flex w-full h-full left-0 top-0 items-center justify-center"
+>
+  <div
+    class="bg-slate-400 w-full h-full opacity-50"
+    (click)="isToastVisible = false"
+  ></div>
+  <app-template-form
+    class="z-10 absolute"
+    (result)="onToastSave($event)"
+    [template]="(toBeEdited$ | async)!"
+  ></app-template-form>
+</div>
+<div class="w-full flex items-end flex-col">
+  <button
+    (click)="isToastVisible = true"
+    class="bg-sky-500 text-white text-xs p-1 px-2 rounded-md font-semibold"
+  >
+    New Template
+  </button>
+</div>
+<div class="mt-2 w-96 text-sm rounded-xl border-slate-300 border py-3">
+  <table class="table-auto w-full">
+    <thead class="border-b border-slate-300">
+      <tr>
+        <th class="pl-2">id</th>
+        <th class="pl-2">Description</th>
+        <th class="pl-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="">
+      <tr class=" " *ngIf="(templates$ | async)?.length == 0">
+        <td colspan="3" class="text-center py-3">No Records</td>
+      </tr>
+      <tr *ngFor="let t of templates$ | async">
+        <td>{{ t.id }}</td>
+        <td>{{ t.description }}</td>
+        <td>
+          <button (click)="editTemplate(t)">
+            <span class="material-symbols-outlined"> edit </span>
+          </button>
+          <button (click)="deleteTemplate(t.id!)">
+            <span class="material-symbols-outlined"> delete </span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
