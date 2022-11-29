@@ -1,0 +1,21 @@
+<div class="bg-white w-96 h-80 p-4">
+  <form [formGroup]="templateForm" (ngSubmit)="onSubmit()">
+    <div class="w-full h-3/4 p-4">
+      <textarea
+        name=""
+        id=""
+        rows="8"
+        class="border w-full h-full inline-block border-slate-400 rounded-md outline-none p-1"
+        formControlName="description"
+      ></textarea>
+    </div>
+    <div class="flex w-full justify-center">
+      <button
+        class="rounded-md p-2 px-4 bg-sky-500 text-white text-sm"
+        type="submit"
+      >
+        Save
+      </button>
+    </div>
+  </form>
+</div>
