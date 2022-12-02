@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { GetProjectsInput } from '../_models/get-projects-input.model';
+import { Job } from '../_models/job.model';
 import { Template } from '../_models/template.model';
 import { User } from '../_models/user.model';
 
@@ -46,6 +47,10 @@ export class ApiClientService {
   }
   fl_GetProjects(input: GetProjectsInput) {
     const uri = this.API_BASE_URL + 'Freelance/Projects';
+  }
+  fl_getJobs() {
+    const uri = this.API_BASE_URL + 'Freelance/GetJobs';
+    return this.httpClient.get<Job[]>(uri);
   }
   getTemplates() {
     const uri = this.API_BASE_URL + 'DescriptionTemplate';

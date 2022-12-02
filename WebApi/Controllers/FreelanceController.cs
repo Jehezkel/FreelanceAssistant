@@ -98,10 +98,10 @@ public class FreelanceController : ControllerBase
 
     [HttpPost]
     [Route("BidAction/{bidId:int}")]
-    public async Task<IActionResult> BidAction([FromRoute]int bidId, [FromBody]BidActionInput body)
+    public async Task<IActionResult> BidAction([FromRoute] int bidId, [FromBody] BidActionInput body)
     {
-        body.BidId = bidId; 
-        
+        body.BidId = bidId;
+
         var accessToken = await GetAccessTokenAsync();
         if (accessToken is not null)
         {
@@ -127,13 +127,13 @@ public class FreelanceController : ControllerBase
     }
     [HttpGet]
     [Route("GetJobs")]
-    public async Task<IActionResult> GetJobs([FromQuery]JobsInput jobsInput)
+    public async Task<IActionResult> GetJobs([FromQuery] JobsInput jobsInput)
     {
         var accessToken = await GetAccessTokenAsync();
         if (accessToken is not null)
         {
-            await _flClient.GetJobsAsync(accessToken, jobsInput);
-            return Ok();
+            var result = await _flClient.GetJobsAsync(accessToken, jobsInput);
+            return Ok(result);
         }
         return Problem(detail: "Configure integration token first! Token for Freelancer  not found",
                         title: "Integration not configured");
@@ -150,6 +150,6 @@ public class FreelanceController : ControllerBase
         var accessTokenValue = await _fLApiTokenRepository.GetAccessToken(currentUserID);
         return accessTokenValue;
     }
-   
+
 
 }

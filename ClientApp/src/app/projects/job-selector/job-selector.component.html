@@ -1,0 +1,13 @@
+<select
+  (change)="onCategoryChange(categoryInput.value)"
+  #categoryInput
+  class="outline-none"
+>
+  <option>Any</option>
+  <option *ngFor="let category of categories | async">
+    {{ category.name }}
+  </option>
+</select>
+<div>
+  <button *ngFor="let job of jobList$ | async">{{ job.name }}</button>
+</div>

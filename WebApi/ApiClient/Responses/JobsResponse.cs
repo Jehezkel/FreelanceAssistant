@@ -4,13 +4,14 @@ namespace WebApi.ApiClient.Responses;
 
 public record JobResponse
 {
-    public string Name { get; set; }= null!;
-    public CategoryResponse Category { get; set; }=null!;
+    public int Id { get; init; }
+    public string Name { get; init; } = null!;
+    public CategoryResponse Category { get; init; } = null!;
 }
 public record CategoryResponse
 {
-    public int Id { get; set; }
-    public string Name { get; set; } = null!;
+    public int Id { get; init; }
+    public string Name { get; init; } = null!;
 }
 
 //"id": 84,
