@@ -1,3 +1,10 @@
 <p>projects works!</p>
 <p>xd {{ response | json }}</p>
-<app-job-selector [categories]="categories$"></app-job-selector>
+<div *ngIf="jobs$ | async">
+  <app-job-selector
+    *ngIf="categories$ | async as cats"
+    [categories]="cats"
+    [jobs]="(jobs$ | async)!"
+    (selectedCategory)="filterJobsByCategory($event)"
+  ></app-job-selector>
+</div>

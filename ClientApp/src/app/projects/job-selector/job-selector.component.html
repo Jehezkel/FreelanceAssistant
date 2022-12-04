@@ -4,10 +4,11 @@
   class="outline-none"
 >
   <option>Any</option>
-  <option *ngFor="let category of categories | async">
+  <option *ngFor="let category of categories">
     {{ category.name }}
   </option>
 </select>
+<div><input #jobSearchBox type="text" name="" id="" /></div>
 <div>
-  <button *ngFor="let job of jobList$ | async">{{ job.name }}</button>
+  <button class="p-2" *ngFor="let job of jobs$ | async">{{ job.name }}</button>
 </div>
