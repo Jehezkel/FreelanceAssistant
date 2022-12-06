@@ -6,5 +6,6 @@
     [categories]="cats"
     [jobs$]="jobs$"
     (selectedCategory)="filterJobsByCategory($event)"
+    (clickedJob)="onJobClick($event)"
   ></app-job-selector>
 </div>

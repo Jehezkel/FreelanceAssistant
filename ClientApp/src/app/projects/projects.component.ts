@@ -43,4 +43,10 @@ export class ProjectsComponent implements OnInit {
   filterJobsByCategory(categoryName: string) {
     this.selectedCategoryName$.next(categoryName);
   }
+  onJobClick(job: Job) {
+    var afterChange = this.jobs$.value;
+    var index = afterChange.findIndex((j) => j.id == job.id);
+    afterChange[index] = job;
+    this.jobs$.next(afterChange);
+  }
 }

@@ -45,7 +45,12 @@ import { Category, Job } from 'src/app/_models/job.model';
     </select>
     <div><input #jobSearchBox type="text" name="" id="" /></div>
     <div>
-      <button class="p-2" *ngFor="let job of filteredJobs$ | async">
+      <button
+        [ngClass]="{ 'bg-sky-500': job.selected }"
+        class="p-2"
+        *ngFor="let job of filteredJobs$ | async"
+        (click)="onJobClick(job)"
+      >
         {{ job.name }}
       </button>
     </div> `,
@@ -56,6 +61,7 @@ export class JobSelectorComponent implements OnInit {
   // jobs list filtered by category at smart component
   @Input() jobs$: Observable<Job[]>;
   @Output() selectedCategory = new EventEmitter<string>();
+  @Output() clickedJob = new EventEmitter<Job>();
   //Search box
   @ViewChild('jobSearchBox') jobSearchBoxRef: ElementRef;
   filteredJobs$: Observable<Job[]>;
@@ -67,21 +73,29 @@ export class JobSelectorComponent implements OnInit {
       'keyup'
     ).pipe(
       map((event) => (event.target as HTMLInputElement).value),
-      filter((search_val: string) => search_val.length > 2),
+      startWith(''),
+      filter(
+        (search_val: string) => search_val.length > 2 || search_val.length === 0
+      ),
       distinctUntilChanged(),
-      debounceTime(300),
-      startWith('')
+      debounceTime(300)
     );
-    this.filteredJobs$ = this.jobs$.pipe(
-      withLatestFrom(this.searchInput$),
-      map(([jobs, input]) => {
+    this.filteredJobs$ = this.searchInput$.pipe(
+      switchMap((input) => {
         if (input.length > 0) {
-          return jobs.filter((j) => j.name.indexOf(input) != -1);
+          return this.jobs$.pipe(
+            map((jobs) =>
+              jobs.filter(
+                (j) => j.name.toUpperCase().indexOf(input.toUpperCase()) != -1
+              )
+            )
+          );
         } else {
-          return jobs;
+          return this.jobs$;
         }
       })
     );
+
     // this.jobs$.subscribe();
   }
   ngAfterViewInit(): void {}
@@ -90,5 +104,9 @@ export class JobSelectorComponent implements OnInit {
   onCategoryChange(selectedValue: string) {
     console.log('selected category:', selectedValue);
     this.selectedCategory.emit(selectedValue);
+  }
+  onJobClick(job: Job) {
+    job.selected = !job.selected;
+    this.clickedJob.emit(job);
   }
 }
