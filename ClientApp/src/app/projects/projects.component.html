@@ -4,7 +4,7 @@
   <app-job-selector
     *ngIf="categories$ | async as cats"
     [categories]="cats"
-    [jobs]="(jobs$ | async)!"
+    [jobs$]="jobs$"
     (selectedCategory)="filterJobsByCategory($event)"
   ></app-job-selector>
 </div>

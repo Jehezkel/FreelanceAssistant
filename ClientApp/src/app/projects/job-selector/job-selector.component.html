@@ -10,5 +10,5 @@
 </select>
 <div><input #jobSearchBox type="text" name="" id="" /></div>
 <div>
-  <button class="p-2" *ngFor="let job of jobs$ | async">{{ job.name }}</button>
+  <button class="p-2" *ngFor="let job of filteredJobs$ | async">{{ job.name }}</button>
 </div>
