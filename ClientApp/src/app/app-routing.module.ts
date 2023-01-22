@@ -6,9 +6,10 @@ import { LoginComponent } from './account/login/login.component';
 import { RegisterComponent } from './account/register/register.component';
 import { ActivateComponent } from './account/activate/activate.component';
 import { VerifyCodeComponent } from './home/verify-code/verify-code.component';
-import { TemplatesComponent } from './templates/templates.component';
+import { TemplatesComponent } from './bid-templates/templates.component';
 import { BidsComponent } from './bids/bids.component';
 import { ProjectsComponent } from './projects/projects.component';
+import { ProjectSearchesComponent } from './project-searches/project-searches.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -17,9 +18,10 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'activate', component: ActivateComponent },
   { path: 'VerifyCode', component: VerifyCodeComponent },
-  { path: 'templates', component: TemplatesComponent },
+  { path: 'bid-templates', component: TemplatesComponent },
   { path: 'bids', component: BidsComponent },
   { path: 'projects', component: ProjectsComponent },
+  { path: 'project-searches', component: ProjectSearchesComponent },
 ];
 
 @NgModule({

@@ -21,10 +21,11 @@ import { JwtInterceptor } from './helpers/jwt.interceptor';
 import { VerifyCodeComponent } from './home/verify-code/verify-code.component';
 import { UserButtonComponent } from './navbar/user-button/user-button.component';
 import { NavbarComponent } from './navbar/navbar.component';
-import { TemplatesComponent } from './templates/templates.component';
+import { TemplatesComponent } from './bid-templates/templates.component';
 import { BidsComponent } from './bids/bids.component';
-import { TemplateFormComponent } from './templates/template-form/template-form.component';
+import { TemplateFormComponent } from './bid-templates/template-form/template-form.component';
 import { JobSelectorComponent } from './projects/job-selector/job-selector.component';
+import { ProjectSearchesComponent } from './project-searches/project-searches.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { JobSelectorComponent } from './projects/job-selector/job-selector.compo
     BidsComponent,
     TemplateFormComponent,
     JobSelectorComponent,
+    ProjectSearchesComponent,
   ],
   imports: [
     BrowserModule,

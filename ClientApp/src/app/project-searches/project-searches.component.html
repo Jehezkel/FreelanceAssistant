@@ -1,0 +1,26 @@
+<h1 class="mx-auto">Project searches</h1>
+<div class="flex justify-center items-center w-96 flex-col">
+  <button class="bg-sky-600 text-white px-2 py-1 rounded-md ml-auto">
+    New Search
+  </button>
+  <div class="flex w-full">
+    <div class="w-full">
+      <table class="w-4/5 bg-red-400">
+        <thead>
+          <tr>
+            <th>id</th>
+            <th class="pl-2">jobs</th>
+            <th class="pl-2">rates</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let search of searches$ | async">
+            <td>{{ search.id }}</td>
+            <td>{{ search.jobs }}</td>
+            <td>{{ search.min_price + "-" + search.max_price }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

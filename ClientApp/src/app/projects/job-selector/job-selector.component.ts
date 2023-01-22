@@ -32,28 +32,7 @@ import { Category, Job } from 'src/app/_models/job.model';
 
 @Component({
   selector: 'app-job-selector',
-  // templateUrl: './job-selector.component.html',
-  template: `<select
-      (change)="onCategoryChange(categoryInput.value)"
-      #categoryInput
-      class="outline-none"
-    >
-      <option>Any</option>
-      <option *ngFor="let category of categories">
-        {{ category.name }}
-      </option>
-    </select>
-    <div><input #jobSearchBox type="text" name="" id="" /></div>
-    <div>
-      <button
-        [ngClass]="{ 'bg-sky-500': job.selected }"
-        class="p-2"
-        *ngFor="let job of filteredJobs$ | async"
-        (click)="onJobClick(job)"
-      >
-        {{ job.name }}
-      </button>
-    </div> `,
+  templateUrl: './job-selector.component.html',
   styleUrls: ['./job-selector.component.css'],
 })
 export class JobSelectorComponent implements OnInit {

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Template } from 'src/app/_models/template.model';
+import { BidTemplate } from 'src/app/_models/bid-template';
 
 @Component({
   selector: 'app-template-form',
@@ -8,8 +8,8 @@ import { Template } from 'src/app/_models/template.model';
   styleUrls: ['./template-form.component.css'],
 })
 export class TemplateFormComponent implements OnInit {
-  @Input() template: Template = new Template();
-  @Output() result = new EventEmitter<Template>();
+  @Input() template: BidTemplate = new BidTemplate();
+  @Output() result = new EventEmitter<BidTemplate>();
   templateForm: FormGroup = this.fb.group({
     description: [''],
   });

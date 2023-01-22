@@ -1,25 +1,25 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, tap } from 'rxjs';
-import { Template } from '../_models/template.model';
+import { BidTemplate } from '../_models/bid-template';
 import { ApiClientService } from './api-client.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TemplateService {
-  templates$: BehaviorSubject<Template[]> = new BehaviorSubject<Template[]>([]);
+  templates$ = new BehaviorSubject<BidTemplate[]>([]);
 
   constructor(private apiService: ApiClientService) {}
   refreshTemplates() {
     return this.apiService
       .getTemplates()
-      .pipe(tap((data: Template[]) => this.templates$.next(data)));
+      .pipe(tap((data: BidTemplate[]) => this.templates$.next(data)));
   }
   addTemplate(desc: string) {
     return this.apiService
       .addTemplate(desc)
       .pipe(
-        tap((data: Template) =>
+        tap((data: BidTemplate) =>
           this.templates$.next([...this.templates$.value, data])
         )
       );
@@ -33,9 +33,9 @@ export class TemplateService {
         )
       );
   }
-  updateTemplate(template: Template) {
+  updateTemplate(template: BidTemplate) {
     return this.apiService.updateTemplate(template).pipe(
-      tap((data: Template) => {
+      tap((data: BidTemplate) => {
         var result = this.templates$.value;
         var templateIndex = result.findIndex((t) => t.id === template.id);
         result[templateIndex] = data;
