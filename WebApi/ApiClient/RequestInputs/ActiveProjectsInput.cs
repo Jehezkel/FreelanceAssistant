@@ -5,7 +5,6 @@ namespace WebApi.FreelanceQueries;
 
 public record ActiveProjectsInput
 {
-    [JsonIgnore]
     [UseInRequestParameters("min_price")]
     public decimal? MinPrice { get; set; }
     [UseInRequestParameters("max_price")]

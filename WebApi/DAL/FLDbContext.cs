@@ -14,19 +14,19 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
 
     public DbSet<FLApiToken> FLApiTokens => Set<FLApiToken>();
 
-    public DbSet<DescriptionTemplate> DescriptionTemplates =>Set<DescriptionTemplate>();
+    public DbSet<BidTemplate> BidTemplates => Set<BidTemplate>();
+    public DbSet<ProjectSearch> ProjectSearches => Set<ProjectSearch>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.Seed();
         base.OnModelCreating(builder);
+
         builder.Entity<UserTempToken>()
         .HasOne(t => t.User)
         .WithMany(u => u.UserTempTokens)
         .HasForeignKey(t => t.UserID);
-
         builder.Entity<UserTempToken>().HasKey(t => new { t.UserID, t.Type });
-
         builder.Entity<UserTempToken>()
         .Property(t => t.Type).HasConversion(v => v.ToString(), v => (TokenType)Enum.Parse(typeof(TokenType), v));
 
@@ -36,11 +36,18 @@ public class FLDbContext : IdentityDbContext<AppUser>, IFLDbContext
         .WithOne(u => u.FLApiToken)
         .HasForeignKey<FLApiToken>(t => t.UserId);
 
-        builder.Entity<DescriptionTemplate>().HasKey(t => t.Id);
-        builder.Entity<DescriptionTemplate>()
+        builder.Entity<BidTemplate>().HasKey(t => t.Id);
+        builder.Entity<BidTemplate>()
         .HasOne(d => d.User)
         .WithMany(u => u.DescriptionTemplates)
         .HasForeignKey(t => t.UserId);
+
+        builder.Entity<ProjectSearch>().HasKey(p => p.Id);
+        builder.Entity<ProjectSearch>().HasOne(p => p.User)
+            .WithMany(u => u.projectSearches).HasForeignKey(p => p.UserId);
+        builder.Entity<ProjectSearch>()
+            .Property(p => p.Input)
+            .HasColumnType("jsonb");
 
     }
 

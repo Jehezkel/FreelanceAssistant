@@ -8,6 +8,7 @@ public interface IFLDbContext
 {
     DbSet<UserTempToken> UserTempTokens { get; }
     DbSet<FLApiToken> FLApiTokens { get; }
-    DbSet<DescriptionTemplate> DescriptionTemplates { get; }
+    DbSet<BidTemplate> BidTemplates { get; }
+    DbSet<ProjectSearch> ProjectSearches { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

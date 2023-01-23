@@ -12,36 +12,36 @@ namespace WebApi.Controllers
     [Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class DescriptionTemplateController : ControllerBase
+    public class BidTemplateController : ControllerBase
     {
         private readonly IFLDbContext _fLDbContext;
         private readonly ICurrentUserService _currentUserService;
 
-        public DescriptionTemplateController(IFLDbContext fLDbContext, ICurrentUserService currentUserService)
+        public BidTemplateController(IFLDbContext fLDbContext, ICurrentUserService currentUserService)
         {
             _fLDbContext = fLDbContext;
             _currentUserService = currentUserService;
         }
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(DescriptionTemplate[]))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BidTemplate[]))]
         public async Task<IActionResult> GetTemplates()
         {
-            var result = await _fLDbContext.DescriptionTemplates
+            var result = await _fLDbContext.BidTemplates
                 .Where(t => _currentUserService.IsAdmin ? true : t.UserId == _currentUserService.UserId).ToArrayAsync();
             return Ok(result);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateTemplate(DescriptionTemplate descriptionTemplate)
+        public async Task<IActionResult> CreateTemplate(BidTemplate descriptionTemplate)
         {
             descriptionTemplate.UserId = _currentUserService.UserId!;
-            _fLDbContext.DescriptionTemplates.Add(descriptionTemplate);
+            _fLDbContext.BidTemplates.Add(descriptionTemplate);
             await _fLDbContext.SaveChangesAsync();
             return Ok(descriptionTemplate);
         }
         [HttpPut]
-        public async Task<IActionResult> UpdateTemplate(DescriptionTemplate descriptionTemplate)
+        public async Task<IActionResult> UpdateTemplate(BidTemplate descriptionTemplate)
         {
-            var template = await _fLDbContext.DescriptionTemplates
+            var template = await _fLDbContext.BidTemplates
                 .Where(t => _currentUserService.IsAdmin ? true : t.UserId == _currentUserService.UserId && t.Id == descriptionTemplate.Id)
                 .FirstOrDefaultAsync();
             if (template is null)
@@ -56,14 +56,14 @@ namespace WebApi.Controllers
         [Route("{templateId:int}")]
         public async Task<IActionResult> DeleteTemplate([FromRoute] int templateId)
         {
-            var template = await _fLDbContext.DescriptionTemplates
+            var template = await _fLDbContext.BidTemplates
                 .Where(t => _currentUserService.IsAdmin ? true : t.UserId == _currentUserService.UserId && t.Id == templateId)
                 .FirstOrDefaultAsync();
             if (template is null)
             {
                 return NotFound();
             }
-            _fLDbContext.DescriptionTemplates.Remove(template);
+            _fLDbContext.BidTemplates.Remove(template);
             await _fLDbContext.SaveChangesAsync();
             return Ok();
         }

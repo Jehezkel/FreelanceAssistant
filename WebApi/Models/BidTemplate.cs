@@ -2,7 +2,7 @@
 
 namespace WebApi.Models
 {
-    public class DescriptionTemplate
+    public class BidTemplate
     {
         public int Id { get; set; }
         [JsonIgnore]
