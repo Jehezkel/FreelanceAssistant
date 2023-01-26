@@ -1,4 +1,4 @@
-namespace WebApi.Account;
+namespace WebApi.Dtos.Account;
 public class RefreshResult
 {
     public string AccessToken { get; set; } = null!;

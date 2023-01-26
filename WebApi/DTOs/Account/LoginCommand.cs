@@ -1,4 +1,4 @@
-namespace WebApi.Account;
+namespace WebApi.Dtos.Account;
 public class LoginCommand
 {
     public string Email { get; set; } = null!;

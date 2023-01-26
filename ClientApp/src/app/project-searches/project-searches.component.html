@@ -5,19 +5,25 @@
   </button>
   <div class="flex w-full">
     <div class="w-full">
-      <table class="w-4/5 bg-red-400">
+      <table class="w-4/5">
         <thead>
           <tr>
-            <th class="pl-2">id</th>
-            <th class="pl-2">jobs</th>
-            <th class="pl-2">rates</th>
+            <th class="pl-2">Id</th>
+            <th class="pl-2">Jobs</th>
+            <th class="pl-2">Rates</th>
+            <th class="pl-2">User Name</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let search of searches$ | async">
-            <td>{{ search.id }}</td>
-            <td>{{ search.jobs }}</td>
-            <td>{{ search.min_price + "-" + search.max_price }}</td>
+            <td class="text-center">{{ search.id }}</td>
+            <td class="text-center">{{ search.input.jobs }}</td>
+            <td class="text-center">
+              {{ search.input.minPrice ?? 0 | number : ".2-2" }}
+              -
+              {{ search.input.maxPrice ?? 0 | number : ".2-2" }}
+            </td>
+            <td class="text-center">{{ search.userName }}</td>
           </tr>
         </tbody>
       </table>

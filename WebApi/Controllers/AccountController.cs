@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebApi.Account;
+using WebApi.Dtos.Account;
 using WebApi.DAL;
 using WebApi.Models;
 using WebApi.Services;
@@ -19,8 +19,8 @@ public class AccountController : ControllerBase
     private readonly ITokenService _tokenService;
     private readonly MailService _mailService;
 
-    public AccountController(FLDbContext context, ILogger<AccountController> logger, SignInManager<AppUser> signInManager, 
-        UserManager<AppUser> userManager, 
+    public AccountController(FLDbContext context, ILogger<AccountController> logger, SignInManager<AppUser> signInManager,
+        UserManager<AppUser> userManager,
         ITokenService tokenService, MailService mailService)
     {
         _context = context;
@@ -143,6 +143,6 @@ public class AccountController : ControllerBase
         return Ok();
     }
 
-    
+
 
 }

@@ -4,6 +4,8 @@ import { MessagesService } from '@services/messages.service';
 import { TemplateService } from '@services/bid-template.service';
 import { BehaviorSubject, finalize, Observable } from 'rxjs';
 import { BidTemplate } from '../_models/bid-template';
+import { MatTableDataSource } from '@angular/material/table';
+import { TemplateDataSource } from '@services/template.dataSource';
 
 @Component({
   selector: 'app-templates',
@@ -12,14 +14,24 @@ import { BidTemplate } from '../_models/bid-template';
 })
 export class TemplatesComponent implements OnInit {
   isToastVisible: boolean = false;
-  templates$: Observable<BidTemplate[]> = this.templateService.templates$;
+  // dataSource: TemplateDataSource = new TemplateDataSource(this.templateService);
+  dataSource = new MatTableDataSource<BidTemplate>();
+  templates$ = this.templateService.templates$;
   toBeEdited$: BehaviorSubject<BidTemplate> = new BehaviorSubject<BidTemplate>(
     new BidTemplate()
   );
+  displayedColumns = ['id', 'description', 'actions'];
   constructor(
     private templateService: TemplateService,
     private messageService: MessagesService
-  ) {}
+  ) {
+    this.templateService.templates$.subscribe(
+      (data) => (this.dataSource.data = data)
+    );
+    // this.dataSource = new TemplateDataSource(this.templateService);
+    // this.dataSource = new MatTableDataSource<BidTemplate>(this.templates);
+    // this.templates$.subscribe((data) => (this.dataSource.data = data));
+  }
   onToastSave(template: BidTemplate) {
     if (template.id) {
       this.templateService
@@ -49,8 +61,8 @@ export class TemplatesComponent implements OnInit {
     this.toBeEdited$.next(new BidTemplate());
     this.isToastVisible = true;
   }
-  deleteTemplate(id: number) {
-    this.templateService.removeTemplate(id).subscribe({
+  deleteTemplate(template: BidTemplate) {
+    this.templateService.removeTemplate(template.id!).subscribe({
       next: () => this.messageService.addSuccess('Template Deleted!'),
     });
   }

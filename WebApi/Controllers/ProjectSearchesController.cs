@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi.DAL;
+using WebApi.DTOs.ProjectSearch;
 using WebApi.Models;
 using WebApi.Services;
 

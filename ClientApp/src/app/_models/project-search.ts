@@ -1,6 +1,13 @@
+import { Job } from './job.model';
+
 export interface ProjectSearch {
   id: number;
-  min_price: number;
-  max_price: number;
-  jobs: number[];
+  userName: string;
+  input: SearchInput;
+}
+export class SearchInput {
+  minPrice?: number;
+  maxPrice?: number;
+  jobs: Job[];
+  constructor() {}
 }

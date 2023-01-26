@@ -13,7 +13,7 @@ import { User } from '../_models/user.model';
 export class ApiClientService {
   API_BASE_URL: string = environment.API_BASE_PATH;
   PROJ_SEARCH_URL: string = this.API_BASE_URL + 'ProjectSearch';
-  BID_TEMPLATE_URL: string = this.API_BASE_URL + 'DescriptionTemplate';
+  BID_TEMPLATE_URL: string = this.API_BASE_URL + 'BidTemplate';
   constructor(private httpClient: HttpClient) {}
   login(email: string, password: string): Observable<User> {
     const uri = this.API_BASE_URL + 'Account/Login';

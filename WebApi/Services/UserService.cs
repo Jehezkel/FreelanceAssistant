@@ -1,7 +1,7 @@
 ﻿using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using WebApi.Account;
+using WebApi.Dtos;
 using WebApi.Models;
 
 namespace WebApi.Services;

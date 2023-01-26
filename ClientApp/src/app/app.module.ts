@@ -26,11 +26,16 @@ import { BidsComponent } from './bids/bids.component';
 import { TemplateFormComponent } from './bid-templates/template-form/template-form.component';
 import { JobSelectorComponent } from './projects/job-selector/job-selector.component';
 import { ProjectSearchesComponent } from './project-searches/project-searches.component';
-
+import { SearchFormComponent } from './project-searches/search-form/search-form.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { TemplateDataSource } from '@services/template.dataSource';
+import { TemplateService } from '@services/bid-template.service';
+import { TableComponent } from './_shared/table/table.component';
 @NgModule({
   declarations: [
     AppComponent,
-
     LoginComponent,
     HomeComponent,
     RegisterComponent,
@@ -46,6 +51,8 @@ import { ProjectSearchesComponent } from './project-searches/project-searches.co
     TemplateFormComponent,
     JobSelectorComponent,
     ProjectSearchesComponent,
+    SearchFormComponent,
+    TableComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,10 +60,15 @@ import { ProjectSearchesComponent } from './project-searches/project-searches.co
     HttpClientModule,
     ReactiveFormsModule,
     MomentModule,
+    BrowserAnimationsModule,
+    MatTableModule,
+    MatButtonModule,
   ],
   providers: [
     AuthGuard,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    TemplateDataSource,
+    TemplateService,
     // { provide: 'API_BASE_URL', use: environment.API_BASE_PATH }
   ],
   bootstrap: [AppComponent],

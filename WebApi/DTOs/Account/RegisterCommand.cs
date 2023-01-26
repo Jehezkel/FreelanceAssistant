@@ -1,4 +1,4 @@
-namespace WebApi.Account;
+namespace WebApi.Dtos.Account;
 public class RegisterCommand
 {
     public string Email { get; set; } = null!;

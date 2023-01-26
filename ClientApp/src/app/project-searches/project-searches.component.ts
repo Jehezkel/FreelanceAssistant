@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ProjectSearchesService } from '@services/project-searches.service';
 
 @Component({
@@ -6,7 +6,10 @@ import { ProjectSearchesService } from '@services/project-searches.service';
   templateUrl: './project-searches.component.html',
   styleUrls: ['./project-searches.component.css'],
 })
-export class ProjectSearchesComponent {
+export class ProjectSearchesComponent implements OnInit {
   searches$ = this.searchesService.searches$;
   constructor(private searchesService: ProjectSearchesService) {}
+  ngOnInit(): void {
+    this.searchesService.refreshSearches().subscribe();
+  }
 }
