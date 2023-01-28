@@ -6,6 +6,7 @@ import { BehaviorSubject, finalize, Observable } from 'rxjs';
 import { BidTemplate } from '../_models/bid-template';
 import { MatTableDataSource } from '@angular/material/table';
 import { TemplateDataSource } from '@services/template.dataSource';
+import { ColOptions } from '../_shared/table/table.component';
 
 @Component({
   selector: 'app-templates',
@@ -13,30 +14,21 @@ import { TemplateDataSource } from '@services/template.dataSource';
   styleUrls: ['./templates.component.css'],
 })
 export class TemplatesComponent implements OnInit {
-  isToastVisible: boolean = false;
-  // dataSource: TemplateDataSource = new TemplateDataSource(this.templateService);
-  dataSource = new MatTableDataSource<BidTemplate>();
+  isTemplateFormVisible: boolean = false;
   templates$ = this.templateService.templates$;
-  toBeEdited$: BehaviorSubject<BidTemplate> = new BehaviorSubject<BidTemplate>(
-    new BidTemplate()
-  );
-  displayedColumns = ['id', 'description', 'actions'];
+  templateInput = new BidTemplate();
+  tableOptions: ColOptions[] = [];
   constructor(
     private templateService: TemplateService,
     private messageService: MessagesService
   ) {
-    this.templateService.templates$.subscribe(
-      (data) => (this.dataSource.data = data)
-    );
-    // this.dataSource = new TemplateDataSource(this.templateService);
-    // this.dataSource = new MatTableDataSource<BidTemplate>(this.templates);
-    // this.templates$.subscribe((data) => (this.dataSource.data = data));
+    this.configureTable();
   }
-  onToastSave(template: BidTemplate) {
+  OnDialogSave(template: BidTemplate) {
     if (template.id) {
       this.templateService
         .updateTemplate(template)
-        .pipe(finalize(() => (this.isToastVisible = false)))
+        .pipe(finalize(() => (this.isTemplateFormVisible = false)))
         .subscribe({
           next: () => this.messageService.addSuccess('Template Updated'),
           error: (err) =>
@@ -45,7 +37,7 @@ export class TemplatesComponent implements OnInit {
     } else {
       this.templateService
         .addTemplate(template.description)
-        .pipe(finalize(() => (this.isToastVisible = false)))
+        .pipe(finalize(() => (this.isTemplateFormVisible = false)))
         .subscribe({
           next: () => this.messageService.addSuccess('New Template Added'),
           error: (err) =>
@@ -54,12 +46,16 @@ export class TemplatesComponent implements OnInit {
     }
   }
   editTemplate(template: BidTemplate) {
-    this.toBeEdited$.next(template);
-    this.isToastVisible = true;
+    console.log('pushed val ', template);
+    // this.templateInput$.next(template);
+    this.templateInput = template;
+    // console.log('subj value', this.templateInput$.value);
+    this.isTemplateFormVisible = true;
   }
   addTemplate() {
-    this.toBeEdited$.next(new BidTemplate());
-    this.isToastVisible = true;
+    // this.templateInput$.next(new BidTemplate());
+    this.templateInput = new BidTemplate();
+    this.isTemplateFormVisible = true;
   }
   deleteTemplate(template: BidTemplate) {
     this.templateService.removeTemplate(template.id!).subscribe({
@@ -68,5 +64,20 @@ export class TemplatesComponent implements OnInit {
   }
   ngOnInit(): void {
     this.templateService.refreshTemplates().subscribe();
+  }
+  configureTable() {
+    let idCol = new ColOptions('id');
+    idCol.headerName = 'ID';
+    idCol.numberFormat = '.2';
+    this.tableOptions.push(idCol);
+
+    let descCol = new ColOptions('description');
+    descCol.headerName = 'Description';
+    this.tableOptions.push(descCol);
+
+    let userCol = new ColOptions('userId');
+    userCol.headerName = 'User';
+    userCol.defaultValue = '-';
+    this.tableOptions.push(userCol);
   }
 }

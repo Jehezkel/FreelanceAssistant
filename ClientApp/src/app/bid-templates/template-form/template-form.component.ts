@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { BidTemplate } from 'src/app/_models/bid-template';
 
 @Component({
@@ -8,8 +9,8 @@ import { BidTemplate } from 'src/app/_models/bid-template';
   styleUrls: ['./template-form.component.css'],
 })
 export class TemplateFormComponent implements OnInit {
-  @Input() template: BidTemplate = new BidTemplate();
-  @Output() result = new EventEmitter<BidTemplate>();
+  @Input() templateInput: BidTemplate = new BidTemplate();
+  @Output() formResult = new EventEmitter<BidTemplate>();
   templateForm: FormGroup = this.fb.group({
     description: [''],
   });
@@ -17,12 +18,15 @@ export class TemplateFormComponent implements OnInit {
    *
    */
   constructor(private fb: FormBuilder) {}
-  ngOnInit(): void {
-    console.log('started value', this.template);
-    this.templateForm.controls.description.setValue(this.template.description);
+  ngOnInit(): void {}
+  ngOnChanges() {
+    this.templateForm.controls.description.setValue(
+      this.templateInput.description
+    );
   }
   onSubmit() {
-    this.template.description = this.templateForm.controls.description.value;
-    this.result.emit(this.template);
+    this.templateInput.description =
+      this.templateForm.controls.description.value;
+    this.formResult.emit(this.templateInput);
   }
 }

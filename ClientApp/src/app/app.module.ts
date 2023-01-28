@@ -33,6 +33,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { TemplateDataSource } from '@services/template.dataSource';
 import { TemplateService } from '@services/bid-template.service';
 import { TableComponent } from './_shared/table/table.component';
+import { DialogComponent } from './_shared/dialog/dialog.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,6 +54,7 @@ import { TableComponent } from './_shared/table/table.component';
     ProjectSearchesComponent,
     SearchFormComponent,
     TableComponent,
+    DialogComponent,
   ],
   imports: [
     BrowserModule,

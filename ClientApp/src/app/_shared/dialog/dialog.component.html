@@ -1,0 +1,10 @@
+<div
+  *ngIf="isDialogVisible"
+  class="absolute flex w-full h-full left-0 top-0 items-center justify-center"
+>
+  <div
+    class="bg-slate-400 w-full h-full opacity-50"
+    (click)="togglVisible()"
+  ></div>
+  <ng-content select=""></ng-content>
+</div>

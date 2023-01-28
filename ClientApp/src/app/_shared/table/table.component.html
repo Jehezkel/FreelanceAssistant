@@ -1,19 +1,26 @@
-<p>table works!</p>
 <table class="table-auto w-full">
   <thead class="border-b border-slate-300">
     <tr>
-      <th *ngFor="let column of Columns" class="pl-2">{{ column }}</th>
+      <th *ngFor="let column of TableOptions" class="pl-2 text-left">
+        {{ column.headerName }}
+      </th>
+      <th>Actions</th>
     </tr>
   </thead>
-  <tbody class="p-5">
+  <tbody class="p-5" *ngIf="Items$ | async as Items">
     <tr class=" " *ngIf="Items!.length == 0">
       <td colspan="3" class="text-center py-3">No Records</td>
     </tr>
     <tr class="mt-2" *ngFor="let item of Items">
-      <td *ngFor="let column of Columns" class="pl-5 py-3">
-        {{ item[column] }}
+      <td *ngFor="let column of TableOptions" class="pl-2 pt-3 text-left">
+        {{
+          column.numberFormat != null
+            ? (item[column.propName] ?? column.defaultValue
+              | number : column.numberFormat)
+            : item[column.propName] ?? column.defaultValue
+        }}
       </td>
-      <td class="pl-2 text-center py-3">
+      <td class="pl-2 text-center pt-3">
         <button (click)="editItem(item)">
           <span class="material-symbols-outlined"> edit </span>
         </button>

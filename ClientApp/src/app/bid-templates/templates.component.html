@@ -1,80 +1,34 @@
-<div
+<!-- <div
   *ngIf="isToastVisible"
   class="absolute flex w-full h-full left-0 top-0 items-center justify-center"
 >
   <div
     class="bg-slate-400 w-full h-full opacity-50"
     (click)="isToastVisible = false"
-  ></div>
+  ></div> -->
+<app-dialog [(isDialogVisible)]="isTemplateFormVisible">
   <app-template-form
     class="z-10 absolute"
-    (result)="onToastSave($event)"
-    [template]="(toBeEdited$ | async)!"
+    [templateInput]="templateInput"
+    (formResult)="OnDialogSave($event)"
   ></app-template-form>
-</div>
+</app-dialog>
+<!-- </div> -->
+
 <div class="w-full flex items-end flex-col">
   <button
-    (click)="isToastVisible = true"
+    (click)="addTemplate()"
     class="bg-sky-500 text-white text-xs p-1 px-2 rounded-md font-semibold"
   >
     New Template
   </button>
 </div>
-<!-- <section>
-  <button mat-raised-button color="primary">New Template</button>
-</section> -->
-<app-table
-  [Items$]="templates$"
-  (EditEmiter)="editTemplate($event)"
-  (DeleteEmiter)="deleteTemplate($event)"
-></app-table>
-<!-- <table class="table-auto w-full">
-    <thead class="border-b border-slate-300">
-      <tr>
-        <th class="pl-2">id</th>
-        <th class="pl-2">Description</th>
-        <th class="pl-2">Actions</th>
-      </tr>
-    </thead>
-    <tbody class="p-5">
-      <tr class=" " *ngIf="(templates$ | async)?.length == 0">
-        <td colspan="3" class="text-center py-3">No Records</td>
-      </tr>
-      <tr class="mt-2" *ngFor="let t of templates$ | async">
-        <td class="pl-2 text-center py-3">{{ t.id }}</td>
-        <td class="pl-5 py-3">{{ t.description }}</td>
-        <td class="pl-2 text-center py-3">
-          <button (click)="editTemplate(t)">
-            <span class="material-symbols-outlined"> edit </span>
-          </button>
-          <button (click)="deleteTemplate(t.id!)">
-            <span class="material-symbols-outlined"> delete </span>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table> -->
-
-<!-- <mat-table class="mat-elevation-z5" [dataSource]="dataSource">
-  <ng-container matColumnDef="id">
-    <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-    <mat-cell *matCellDef="let user"> {{ user.id }} </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="description">
-    <mat-header-cell *matHeaderCellDef> Desc </mat-header-cell>
-    <mat-cell *matCellDef="let user"> {{ user.description }} </mat-cell>
-  </ng-container>
-  <ng-container matColumnDef="actions">
-    <mat-header-cell *matHeaderCellDef> </mat-header-cell>
-    <mat-cell *matCellDef="let user">
-      <button (click)="editTemplate(user)">
-        <span class="material-symbols-outlined"> edit </span>
-      </button>
-      <button (click)="deleteTemplate(user.id!)">
-        <span class="material-symbols-outlined"> delete </span>
-      </button>
-    </mat-cell>
-  </ng-container>
-  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-</mat-table> -->
+<div class="mt-2 w-96 text-sm rounded-xl border-slate-300 border p-5">
+  <app-table
+    [Items$]="templates$"
+    [TableOptions]="tableOptions"
+    (EditEmiter)="editTemplate($event)"
+    (DeleteEmiter)="deleteTemplate($event)"
+  >
+  </app-table>
+</div>

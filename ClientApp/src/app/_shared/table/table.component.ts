@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { first, map } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 
 @Component({
@@ -8,19 +9,19 @@ import { Observable } from 'rxjs/internal/Observable';
 })
 export class TableComponent implements OnInit {
   @Input() Items$: Observable<any[]> = new Observable();
+  @Input() TableOptions: ColOptions[] | undefined;
   Items: any[] = [];
   @Output() DeleteEmiter = new EventEmitter();
   @Output() EditEmiter = new EventEmitter();
   Columns: string[];
   constructor() {}
   ngOnInit(): void {
-    this.Items$.subscribe((data) => {
-      this.Items = data;
-      if (data.length > 0) {
-        console.log(data);
-        this.Columns = Object.keys(this.Items[0]);
-      }
-    });
+    if (!this.TableOptions) {
+      this.Items$.pipe(
+        first((data) => data.length > 0),
+        map((data) => Object.keys(data[0]).map((val) => new ColOptions(val)))
+      ).subscribe((rowOptions) => (this.TableOptions = rowOptions));
+    }
   }
 
   editItem(item: any) {
@@ -28,5 +29,20 @@ export class TableComponent implements OnInit {
   }
   deleteItem(item: any) {
     this.DeleteEmiter.emit(item);
+  }
+}
+export class ColOptions {
+  private _headerName: string;
+  propName: string;
+  set headerName(value: string) {
+    this._headerName = value;
+  }
+  get headerName(): string {
+    return this._headerName ?? this.propName;
+  }
+  defaultValue: string = '';
+  numberFormat?: string;
+  constructor(propName: string) {
+    this.propName = propName;
   }
 }
