@@ -8,8 +8,13 @@
     </tr>
   </thead>
   <tbody class="p-5" *ngIf="Items$ | async as Items">
-    <tr class=" " *ngIf="Items!.length == 0">
-      <td colspan="3" class="text-center py-3">No Records</td>
+    <tr *ngIf="Items!.length == 0">
+      <td
+        [attr.colspan]="(TableOptions?.length ?? 0) + 1"
+        class="text-center py-3 w-full"
+      >
+        No Records
+      </td>
     </tr>
     <tr class="mt-2" *ngFor="let item of Items">
       <td *ngFor="let column of TableOptions" class="pl-2 pt-3 text-left">

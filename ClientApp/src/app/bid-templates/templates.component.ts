@@ -4,7 +4,6 @@ import { MessagesService } from '@services/messages.service';
 import { TemplateService } from '@services/bid-template.service';
 import { BehaviorSubject, finalize, Observable } from 'rxjs';
 import { BidTemplate } from '../_models/bid-template';
-import { MatTableDataSource } from '@angular/material/table';
 import { TemplateDataSource } from '@services/template.dataSource';
 import { ColOptions } from '../_shared/table/table.component';
 

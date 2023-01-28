@@ -14,6 +14,7 @@ export class TableComponent implements OnInit {
   @Output() DeleteEmiter = new EventEmitter();
   @Output() EditEmiter = new EventEmitter();
   Columns: string[];
+  // test: number = this.TableOptions?.length
   constructor() {}
   ngOnInit(): void {
     if (!this.TableOptions) {

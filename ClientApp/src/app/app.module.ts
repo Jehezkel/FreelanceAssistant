@@ -28,8 +28,6 @@ import { JobSelectorComponent } from './projects/job-selector/job-selector.compo
 import { ProjectSearchesComponent } from './project-searches/project-searches.component';
 import { SearchFormComponent } from './project-searches/search-form/search-form.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
 import { TemplateDataSource } from '@services/template.dataSource';
 import { TemplateService } from '@services/bid-template.service';
 import { TableComponent } from './_shared/table/table.component';
@@ -63,8 +61,6 @@ import { DialogComponent } from './_shared/dialog/dialog.component';
     ReactiveFormsModule,
     MomentModule,
     BrowserAnimationsModule,
-    MatTableModule,
-    MatButtonModule,
   ],
   providers: [
     AuthGuard,
