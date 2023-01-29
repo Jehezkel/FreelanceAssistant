@@ -15,9 +15,9 @@ export class TemplateService {
       .getTemplates()
       .pipe(tap((data: BidTemplate[]) => this.templates$.next(data)));
   }
-  addTemplate(desc: string) {
+  addTemplate(template: BidTemplate) {
     return this.apiService
-      .addTemplate(desc)
+      .addTemplate(template)
       .pipe(
         tap((data: BidTemplate) =>
           this.templates$.next([...this.templates$.value, data])

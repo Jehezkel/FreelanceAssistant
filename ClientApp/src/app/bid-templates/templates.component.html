@@ -1,29 +1,62 @@
-<div class="max-w-screen-lg w-screen flex items-center justify-center flex-col">
-  <app-dialog [(isDialogVisible)]="isTemplateFormVisible">
-    <app-template-form
-      class="z-10 absolute"
-      [templateInput]="templateInput"
-      (formResult)="OnDialogSave($event)"
-    ></app-template-form>
-  </app-dialog>
-  <!-- </div> -->
-  <!-- <div class="w-full mx-auto flex items-center flex-col"> -->
-  <div class="w-2/3 flex items-end flex-col">
-    <button
-      (click)="addTemplate()"
-      class="bg-sky-600 text-white px-2 py-1 rounded-md ml-auto --tw"
+<div class="flex flex-col text-center">
+  <h2 mat-dialog-title class="m-0">Bid Templates</h2>
+  <button
+    extended
+    mat-raised-button
+    color="primary"
+    class="my-3 w-fit self-end"
+    (click)="addTemplate()"
+  >
+    Add
+  </button>
+  <div class="mat-elevation-z8">
+    <table
+      mat-table
+      class="full-width-table"
+      matSort
+      aria-label="Elements"
+      [dataSource]="(templates$ | async)!"
     >
-      New Template
-    </button>
-  </div>
-  <div class="mt-2 w-2/3 text-sm rounded-xl border-slate-300 border p-5">
-    <app-table
-      [Items$]="templates$"
-      [TableOptions]="tableOptions"
-      (EditEmiter)="editTemplate($event)"
-      (DeleteEmiter)="deleteTemplate($event)"
-    >
-    </app-table>
-    <!-- </div> -->
+      <!-- no dataa row -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="text-center pt-5" [attr.colspan]="displayedColumns.length">
+          <h3>No data.</h3>
+        </td>
+      </tr>
+
+      <!-- Id Column -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+        <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+      </ng-container>
+
+      <!-- Jobs  Column -->
+      <ng-container matColumnDef="desc">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.description }}
+        </td>
+      </ng-container>
+
+      <!-- Price range Column -->
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.userId ?? "-" }}
+        </td>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
+        <td mat-cell *matCellDef="let row">
+          <mat-icon (click)="editTemplate(row)">edit</mat-icon>
+          <mat-icon (click)="deleteTemplate(row)">delete</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
   </div>
 </div>

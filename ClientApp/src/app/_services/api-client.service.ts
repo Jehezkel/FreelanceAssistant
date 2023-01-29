@@ -58,11 +58,11 @@ export class ApiClientService {
   getTemplates() {
     return this.httpClient.get<BidTemplate[]>(this.BID_TEMPLATE_URL);
   }
-  addTemplate(desc: string) {
-    const reqBody = {
-      description: desc,
-    };
-    return this.httpClient.post<BidTemplate>(this.BID_TEMPLATE_URL, reqBody);
+  addTemplate(template: BidTemplate) {
+    // const reqBody = {
+    //   description: desc,
+    // };
+    return this.httpClient.post<BidTemplate>(this.BID_TEMPLATE_URL, template);
   }
   removeTemplate(id: number) {
     return this.httpClient.delete(`${this.BID_TEMPLATE_URL}/${id}`);
