@@ -29,6 +29,9 @@
         "./src/app/_services/*"
       ]
     },
+    "types": [
+      "@angular/localize"
+    ],
     "useDefineForClassFields": false
   },
   "angularCompilerOptions": {

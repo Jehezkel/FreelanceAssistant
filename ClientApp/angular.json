@@ -51,7 +51,8 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
-            }
+            },
+            "pl": { "localize": ["pl"] }
           },
           "defaultConfiguration": "production"
         },
@@ -63,6 +64,9 @@
             },
             "development": {
               "browserTarget": "clientapp:build:development"
+            },
+            "pl": {
+              "browserTarget": "clientapp:build:development,pl"
             }
           },
           "defaultConfiguration": "development"
@@ -86,6 +90,14 @@
               "src/styles.css"
             ],
             "scripts": []
+          }
+        }
+      },
+      "i18n": {
+        "sourceLocale": "en-US",
+        "locales": {
+          "pl": {
+            "translation": "src/locale/messages.pl.xlf"
           }
         }
       }

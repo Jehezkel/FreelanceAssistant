@@ -1,6 +1,6 @@
 import { Job } from './job.model';
 
-export interface ProjectSearch {
+export class ProjectSearch {
   id: number;
   userName: string;
   input: SearchInput;

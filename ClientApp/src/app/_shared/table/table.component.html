@@ -1,23 +1,35 @@
-<table class="table-auto w-full">
-  <thead class="border-b border-slate-300">
-    <tr>
-      <th *ngFor="let column of TableOptions" class="pl-2 text-left">
-        {{ column.headerName }}
+<table class="table-auto w-full bg-white shadow-5xl text-base">
+  <!-- box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23); -->
+  <thead class="border-slate-300">
+    <tr class="py-3 font-extralight">
+      <th
+        *ngFor="let column of TableOptions"
+        class="py-3 font-medium border-b pl-2 text-left"
+        i18n
+      >
+        { column.headerName, select, ID{ID} Price Range{Price Range} Jobs {Jobs}
+        User {User} other {{{column.headerName}}}}
+        <!-- {{ column.headerName }} -->
       </th>
-      <th>Actions</th>
+      <th class="py-3 font-medium border-b pl-2" i18n>Actions</th>
     </tr>
   </thead>
   <tbody class="p-5" *ngIf="Items$ | async as Items">
     <tr *ngIf="Items!.length == 0">
       <td
         [attr.colspan]="(TableOptions?.length ?? 0) + 1"
-        class="text-center py-3 w-full"
+        class="text-center py-3"
+        i18n
       >
         No Records
       </td>
     </tr>
-    <tr class="mt-2" *ngFor="let item of Items">
-      <td *ngFor="let column of TableOptions" class="pl-2 pt-3 text-left">
+    <tr
+      class="transition-all"
+      *ngFor="let item of Items"
+      [ngClass]="Items.length > 5 ? 'even:bg-slate-100' : 'hover:bg-slate-100'"
+    >
+      <td *ngFor="let column of TableOptions" class="pl-2 py-3 text-left">
         {{
           column.numberFormat != null
             ? (item[column.propName] ?? column.defaultValue
